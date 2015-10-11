@@ -1,6 +1,6 @@
 package com.bibler.awesome.emulators.mos.tests;
 
-import com.bibler.awesome.emulators.mos.systems.Instruction;
+import com.bibler.awesome.emulators.mos.systems.instructions.Instruction;
 
 import junit.framework.TestCase;
 

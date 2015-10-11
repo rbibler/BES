@@ -11,7 +11,7 @@ import com.bibler.awesome.emulators.mos.utils.StringUtils;
 
 public class Emulator implements Runnable {
 	
-	private CPU cpu;
+	private CPU6502 cpu;
 	private PPU ppu;
 	private byte currentOpcode;
 	
@@ -50,7 +50,7 @@ public class Emulator implements Runnable {
         }
 	}
 	
-	public void setCPU(CPU cpu) {
+	public void setCPU(CPU6502 cpu) {
 		this.cpu = cpu;
 		ppu = cpu.mem.ppu;
 		ppu.setEmulator(this);
@@ -68,7 +68,7 @@ public class Emulator implements Runnable {
 		this.frame = frame;
 	}
 	
-	public CPU getCPU() {
+	public CPU6502 getCPU() {
 		return cpu;
 	}
 	

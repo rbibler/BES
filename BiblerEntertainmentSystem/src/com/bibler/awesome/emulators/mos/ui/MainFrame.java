@@ -22,7 +22,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bibler.awesome.emulators.mos.interfaces.Notifiable;
 import com.bibler.awesome.emulators.mos.listeners.MenuListener;
-import com.bibler.awesome.emulators.mos.systems.CPU;
+import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Controller;
 import com.bibler.awesome.emulators.mos.systems.Emulator;
 import com.bibler.awesome.emulators.mos.systems.Memory;
@@ -131,7 +131,7 @@ public class MainFrame extends JFrame implements Notifiable {
 	}
 	
 	public void open() {
-		CPU cpu = FileLoader.loadFile(null, this);
+		CPU6502 cpu = FileLoader.loadFile(null, this);
 		updateDisassemblyPanel(cpu);
 		emulator = new Emulator();
 		emulator.setCPU(cpu);
@@ -149,7 +149,7 @@ public class MainFrame extends JFrame implements Notifiable {
 		ntFrame.setPPU(cpu.ppu);
 	}
 	
-	private void updateDisassemblyPanel(CPU cpu) {
+	private void updateDisassemblyPanel(CPU6502 cpu) {
 		disassemblyPanel.processFile(cpu);
 	}
 	

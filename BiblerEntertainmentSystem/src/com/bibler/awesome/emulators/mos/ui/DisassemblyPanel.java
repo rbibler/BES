@@ -20,7 +20,7 @@ import javax.swing.text.Highlighter.HighlightPainter;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 
-import com.bibler.awesome.emulators.mos.systems.CPU;
+import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Emulator;
 import com.bibler.awesome.emulators.mos.systems.Memory;
 import com.bibler.awesome.emulators.mos.utils.OpcodeTables;
@@ -100,7 +100,7 @@ public class DisassemblyPanel extends JScrollPane {
 		return ret;
 	}
 	
-	public void processFile(CPU cpu) {
+	public void processFile(CPU6502 cpu) {
 		int[] program = cpu.mem.consolidateMemory();
 		StringBuilder builder = new StringBuilder();
 		int opCode;

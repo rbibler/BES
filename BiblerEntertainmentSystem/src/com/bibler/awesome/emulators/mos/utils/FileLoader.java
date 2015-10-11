@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
-import com.bibler.awesome.emulators.mos.systems.CPU;
+import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Memory;
 import com.bibler.awesome.emulators.mos.systems.MemoryManager;
 import com.bibler.awesome.emulators.mos.systems.PPU;
@@ -24,7 +24,7 @@ public class FileLoader {
 	
 	static JFileChooser chooser = new JFileChooser();
 	
-	public static CPU loadFile(File f, MainFrame frame) {
+	public static CPU6502 loadFile(File f, MainFrame frame) {
 		if(f == null) {
 			f = getFile(frame);
 		}
@@ -37,7 +37,7 @@ public class FileLoader {
 		
 	}
 	
-	private static CPU loadZip(File f) {
+	private static CPU6502 loadZip(File f) {
 		ZipFile zip = null;
 		try {
 			zip = new ZipFile(f);
@@ -57,8 +57,8 @@ public class FileLoader {
 		return null;
 	}
 	
-	private static CPU loadNES(InputStream input) {
-		CPU cpu = setupCPU();
+	private static CPU6502 loadNES(InputStream input) {
+		CPU6502 cpu = setupCPU();
 		byte[] header = getHeader(input);
 		int prg = header[4];
 		int chr = header[5];
@@ -79,7 +79,7 @@ public class FileLoader {
 		return cpu;
 	}
 	
-	private static void loadPrg(InputStream input, int prg, CPU cpu) {
+	private static void loadPrg(InputStream input, int prg, CPU6502 cpu) {
 		int address = 0x8000;
 		int bytesToLoad = (prg * 16384) - 1;
 		int loadenBytes = 0;
@@ -102,7 +102,7 @@ public class FileLoader {
 		}
 	}
 	
-	private static void loadChr(InputStream input, int chr, CPU cpu) {
+	private static void loadChr(InputStream input, int chr, CPU6502 cpu) {
 		int bytesToLoad = (chr * 8192) - 1;
 		int loadenBytes = 0;
 		int result = 0;
@@ -136,8 +136,8 @@ public class FileLoader {
 		return header;
 	}
 	
-	private static CPU setupCPU() {
-		return new CPU(new PPU());
+	private static CPU6502 setupCPU() {
+		return new CPU6502(new PPU());
 	}
 	
 	private static BufferedInputStream getInput(File f) {

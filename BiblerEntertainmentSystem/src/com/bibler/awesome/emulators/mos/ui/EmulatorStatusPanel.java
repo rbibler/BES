@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import com.bibler.awesome.emulators.mos.systems.CPU;
+import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Emulator;
 import com.bibler.awesome.emulators.mos.utils.StringUtils;
 
@@ -184,7 +184,7 @@ public class EmulatorStatusPanel extends JPanel {
 	}
 
 	public void updatePanel() {
-		CPU cpu = emulator.getCPU();
+		CPU6502 cpu = emulator.getCPU();
 		aField.setText(StringUtils.formatNumber(cpu.accumulator, 2));
 		xField.setText(StringUtils.formatNumber(cpu.X, 2));
 		yField.setText(StringUtils.formatNumber(cpu.Y, 2));
