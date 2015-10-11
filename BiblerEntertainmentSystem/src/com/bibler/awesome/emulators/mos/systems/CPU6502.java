@@ -47,7 +47,7 @@ public class CPU6502 implements CPU {
 		setupArrays();
 	}
 	
-	public static CPU getInstance(PPU ppu) {
+	public static CPU6502 getInstance(PPU ppu) {
 		if(uniqueInstance == null) {
 			synchronized(CPU6502.class) {
 				if(uniqueInstance == null) {
@@ -96,6 +96,14 @@ public class CPU6502 implements CPU {
 		return mem.read(address);
 	}
 	
+	public void write(int address, int data) {
+		mem.write(address, data);
+	}
+	
+	public void setPC(int PC) {
+		this.PC = PC;
+	}
+	
 	public int getPC() {
 		return PC;
 	}
@@ -107,9 +115,18 @@ public class CPU6502 implements CPU {
 	public int getAccumulator() {
 		return accumulator;
 	}
+	
+
+	public void setX(int X) {
+		this.X = X;
+	}
 
 	public int getX() {
 		return X;
+	}
+	
+	public void setY(int Y) {
+		this.Y = Y;
 	}
 
 	public int getY() {
@@ -210,4 +227,5 @@ public class CPU6502 implements CPU {
 			2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7 
 		};
 	}
+
 }
