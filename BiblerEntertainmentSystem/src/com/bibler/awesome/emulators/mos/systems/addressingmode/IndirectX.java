@@ -6,7 +6,9 @@ public class IndirectX implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
-		int add = cpu.read((cpu.read(cpu.getPC()) + cpu.getX()) % 256);
+		int add = cpu.read(cpu.getPC());
+		add += cpu.getX();
+		add %= 256;
 		cpu.incrementPC();
 		add = cpu.read(add) | cpu.read(add + 1) << 8;
 		cpu.setAddress(add);
