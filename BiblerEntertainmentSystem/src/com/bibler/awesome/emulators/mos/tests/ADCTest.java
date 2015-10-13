@@ -10,6 +10,7 @@ public class ADCTest extends TestCase {
 	
 	public void testADCImmediate() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.write(0x8000, 0x69);
 		cpu.write(0x8001, 0x44);
@@ -18,10 +19,12 @@ public class ADCTest extends TestCase {
 		int cycles = cpu.execute(opCode);
 		assertEquals(0x48, cpu.getAccumulator());
 		assertEquals(2, cycles);
+		assertEquals(0, cpu.getOverflow());
 	}
 	
 	public void testADCZeroPage() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.write(0x8000, 0x65);
 		cpu.write(0x8001, 0x44);
@@ -35,6 +38,7 @@ public class ADCTest extends TestCase {
 	
 	public void testADCZeroPageX() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setX(3);
 		cpu.write(0x8000, 0x75);
@@ -49,6 +53,7 @@ public class ADCTest extends TestCase {
 	
 	public void testAbsolute() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.write(0x8000, 0x6D);
 		cpu.write(0x8001, 0x00);
@@ -63,6 +68,7 @@ public class ADCTest extends TestCase {
 	
 	public void testAbsoluteX() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setX(3);
 		cpu.write(0x8000, 0x7D);
@@ -78,6 +84,7 @@ public class ADCTest extends TestCase {
 	
 	public void testAbsoluteXPageBoundary() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setX(7);
 		cpu.write(0x8000, 0x7D);
@@ -93,6 +100,7 @@ public class ADCTest extends TestCase {
 	
 	public void testAbsoluteY() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setY(3);
 		cpu.write(0x8000, 0x79);
@@ -108,6 +116,7 @@ public class ADCTest extends TestCase {
 	
 	public void testAbsoluteYPageBoundary() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setY(3);
 		cpu.write(0x8000, 0x79);
@@ -123,6 +132,7 @@ public class ADCTest extends TestCase {
 	
 	public void testIndirectX() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
 		cpu.setX(3);
 		cpu.write(0x8000, 0x61);
@@ -139,18 +149,45 @@ public class ADCTest extends TestCase {
 	
 	public void testIndirectY() {
 		cpu = CPU6502.getInstance(null);
+		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
-		cpu.setY(3);
+		cpu.setY(7);
 		cpu.write(0x8000, 0x71);
 		cpu.write(0x8001, 0x44);
-		cpu.write(0x44, 0x03);
-		cpu.write(0x45, 0x44);
-		cpu.write(0x4406, 0x44);
+		cpu.write(0x44, 0x10);
+		cpu.write(0x45, 0x00);
+		cpu.write(0x17, 0x44);
 		cpu.setAccumulator(0x04);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
 		assertEquals(0x48, cpu.getAccumulator());
 		assertEquals(5, cycles);
+	}
+	
+	public void testCarryFlag() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x69);
+		cpu.write(0x8001, 0x44);
+		cpu.setAccumulator(0xFE);
+		cpu.updateCarry(0);
+		int opCode = cpu.fetch();
+		int cycles = cpu.execute(opCode);
+		assertEquals(0x42, cpu.getAccumulator());
+		assertEquals(2, cycles);
+		assertEquals(1, cpu.getCarry());
+	}
+	
+	public void testOverflowFlag() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x69);
+		cpu.write(0x8001, 0x3A);
+		cpu.setAccumulator(0x7C);
+		cpu.updateCarry(0);
+		int opCode = cpu.fetch();
+		int cycles = cpu.execute(opCode);
+		assertEquals(1, cpu.getOverflow());
 	}
 
 }

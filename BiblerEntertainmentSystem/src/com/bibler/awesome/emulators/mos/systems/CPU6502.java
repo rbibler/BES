@@ -159,9 +159,17 @@ public class CPU6502 implements CPU {
 		statusRegister |= zero << 1;
 	}
 	
+	public int getOverflow() {
+		return statusRegister >> 6 & 1;
+	}
+	
 	public void updateOverflow(int overflow) {
 		statusRegister &= ~(1 << 6);
 		statusRegister |= overflow << 6;
+	}
+	
+	public int getSign() {
+		return statusRegister >> 7 & 1;
 	}
 	
 	public void updateSign(int sign) {
