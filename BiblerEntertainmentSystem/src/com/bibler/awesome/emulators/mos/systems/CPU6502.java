@@ -154,6 +154,10 @@ public class CPU6502 implements CPU {
 		statusRegister |= carry;
 	}
 	
+	public int getZero() {
+		return statusRegister >> 1 & 1;
+	}
+	
 	public void updateZero(int zero) {
 		statusRegister &= ~(1 << 1);
 		statusRegister |= zero << 1;

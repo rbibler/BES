@@ -4,214 +4,215 @@ import com.bibler.awesome.emulators.mos.systems.CPU6502;
 
 import junit.framework.TestCase;
 
-public class ADCTest extends TestCase {
+public class ANDTest extends TestCase {
 	
 	private CPU6502 cpu;
 	
-	public void testADCImmediate() {
+	public void testANDImmediate() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
-		cpu.write(0x8000, 0x69);
-		cpu.write(0x8001, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.write(0x8000, 0x29);
+		cpu.write(0x8001, 0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x04, cpu.getAccumulator());
 		assertEquals(2, cycles);
-		assertEquals(0, cpu.getOverflow());
 	}
 	
-	public void testADCZeroPage() {
+	public void testANDZeroPage() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
-		cpu.write(0x8000, 0x65);
+		cpu.write(0x8000, 0x25);
 		cpu.write(0x8001, 0x44);
 		cpu.write(0x44, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(3, cycles);
 	}
 	
-	public void testADCZeroPageX() {
+	public void testANDZeroPageX() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
-		cpu.setPC(0x8000);
 		cpu.setX(3);
-		cpu.write(0x8000, 0x75);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x35);
 		cpu.write(0x8001, 0x44);
 		cpu.write(0x47, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(4, cycles);
 	}
 	
-	public void testAbsolute() {
+	public void testANDAbsolute() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
 		cpu.setPC(0x8000);
-		cpu.write(0x8000, 0x6D);
+		cpu.write(0x8000, 0x2D);
 		cpu.write(0x8001, 0x00);
 		cpu.write(0x8002, 0x44);
 		cpu.write(0x4400, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(4, cycles);
 	}
 	
-	public void testAbsoluteX() {
+	public void testANDAbsoluteX() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
-		cpu.setPC(0x8000);
 		cpu.setX(3);
-		cpu.write(0x8000, 0x7D);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x3D);
 		cpu.write(0x8001, 0x00);
 		cpu.write(0x8002, 0x44);
 		cpu.write(0x4403, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(4, cycles);
 	}
 	
-	public void testAbsoluteXPageBoundary() {
+	public void testANDAbsoluteXPageBoundary() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
+		cpu.setX(3);
 		cpu.setPC(0x8000);
-		cpu.setX(7);
-		cpu.write(0x8000, 0x7D);
-		cpu.write(0x8001, 0xFE);
+		cpu.write(0x8000, 0x3D);
+		cpu.write(0x8001, 0xFF);
 		cpu.write(0x8002, 0x00);
-		cpu.write(0x0105, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.write(0x102, 0x44);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(5, cycles);
 	}
 	
-	public void testAbsoluteY() {
+	public void testANDAbsoluteY() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
-		cpu.setPC(0x8000);
 		cpu.setY(3);
-		cpu.write(0x8000, 0x79);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x39);
 		cpu.write(0x8001, 0x00);
 		cpu.write(0x8002, 0x44);
 		cpu.write(0x4403, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(4, cycles);
 	}
 	
-	public void testAbsoluteYPageBoundary() {
+	public void testANDAbsoluteYPageBoundary() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
-		cpu.setPC(0x8000);
 		cpu.setY(3);
-		cpu.write(0x8000, 0x79);
-		cpu.write(0x8001, 0xFE);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x39);
+		cpu.write(0x8001, 0xFF);
 		cpu.write(0x8002, 0x00);
-		cpu.write(0x101, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.write(0x102, 0x44);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(5, cycles);
 	}
 	
-	public void testIndirectX() {
+	public void testANDIndirectX() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
-		cpu.setPC(0x8000);
 		cpu.setX(3);
-		cpu.write(0x8000, 0x61);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x21);
 		cpu.write(0x8001, 0x44);
 		cpu.write(0x47, 0x00);
 		cpu.write(0x48, 0x44);
 		cpu.write(0x4400, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(6, cycles);
 	}
 	
-	public void testIndirectY() {
+	public void testANDIndirectY() {
 		cpu = CPU6502.getInstance(null);
-		cpu.updateCarry(0);
+		cpu.setY(3);
 		cpu.setPC(0x8000);
-		cpu.setY(7);
-		cpu.write(0x8000, 0x71);
+		cpu.write(0x8000, 0x31);
 		cpu.write(0x8001, 0x44);
 		cpu.write(0x44, 0x10);
-		cpu.write(0x45, 0x00);
-		cpu.write(0x17, 0x44);
-		cpu.setAccumulator(0x04);
+		cpu.write(0x45, 0x44);
+		cpu.write(0x4413, 0x44);
+		cpu.setAccumulator(0x44);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
-		assertEquals(0x48, cpu.getAccumulator());
+		assertEquals(0x44, cpu.getAccumulator());
 		assertEquals(5, cycles);
 	}
 	
-	public void testCarryFlag() {
+	public void testANDIndirectYPageBoundaryTrue() {
 		cpu = CPU6502.getInstance(null);
+		cpu.setY(3);
 		cpu.setPC(0x8000);
-		cpu.write(0x8000, 0x69);
+		cpu.write(0x8000, 0x31);
 		cpu.write(0x8001, 0x44);
+		cpu.write(0x44, 0xFF);
+		cpu.write(0x45, 0x00);
+		cpu.write(0x102, 0x44);
+		cpu.setAccumulator(0x44);
+		int opCode = cpu.fetch();
+		int cycles = cpu.execute(opCode);
+		assertEquals(0x44, cpu.getAccumulator());
+		assertEquals(6, cycles);
+	}
+	
+	
+	public void testANDZeroFlagTrue() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x29);
+		cpu.write(0x8001, 0x00);
+		cpu.setAccumulator(0x00);
+		int opCode = cpu.fetch();
+		int cycles = cpu.execute(opCode);
+		assertEquals(1, cpu.getZero());
+	}
+	
+	public void testANDZeroFlagFalse() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x29);
+		cpu.write(0x8001, 0x01);
+		cpu.setAccumulator(0x01);
+		int opCode = cpu.fetch();
+		int cycles = cpu.execute(opCode);
+		assertEquals(0, cpu.getZero());
+	}
+	
+	public void testANDSignFlagTrue() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0x29);
+		cpu.write(0x8001, 0xFE);
 		cpu.setAccumulator(0xFE);
-		cpu.updateCarry(0);
-		int opCode = cpu.fetch();
-		int cycles = cpu.execute(opCode);
-		assertEquals(0x42, cpu.getAccumulator());
-		assertEquals(2, cycles);
-		assertEquals(1, cpu.getCarry());
-	}
-	
-	public void testOverflowFlag() {
-		cpu = CPU6502.getInstance(null);
-		cpu.setPC(0x8000);
-		cpu.write(0x8000, 0x69);
-		cpu.write(0x8001, 0x3A);
-		cpu.setAccumulator(0x7C);
-		cpu.updateCarry(0);
-		int opCode = cpu.fetch();
-		int cycles = cpu.execute(opCode);
-		assertEquals(1, cpu.getOverflow());
-	}
-	
-	public void testSignFlagTrue() {
-		cpu = CPU6502.getInstance(null);
-		cpu.setPC(0x8000);
-		cpu.write(0x8000,  0x69);;
-		cpu.write(0x8001, 0x7F);
-		cpu.setAccumulator(0x0A);
-		cpu.updateCarry(0);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
 		assertEquals(1, cpu.getSign());
 	}
 	
-	public void testSignFlagFalse() {
+	public void testANDSignFlagFalse() {
 		cpu = CPU6502.getInstance(null);
 		cpu.setPC(0x8000);
-		cpu.write(0x8000,  0x69);;
-		cpu.write(0x8001, 0x0F);
-		cpu.setAccumulator(0x0A);
-		cpu.updateCarry(0);
+		cpu.write(0x8000, 0x29);
+		cpu.write(0x8001, 0x00);
+		cpu.setAccumulator(0xFE);
 		int opCode = cpu.fetch();
 		int cycles = cpu.execute(opCode);
 		assertEquals(0, cpu.getSign());
 	}
+	
 
 }

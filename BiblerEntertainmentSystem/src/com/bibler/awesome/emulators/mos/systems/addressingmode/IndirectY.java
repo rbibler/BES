@@ -6,9 +6,10 @@ public class IndirectY implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
-		final int add = cpu.read(cpu.getPC());
+		int add = cpu.read(cpu.getPC());
 		cpu.incrementPC();
-		final int effectiveAdd = ((cpu.read(add) | (cpu.read(add + 1) << 8)) + cpu.getY()) % 65536;
+		add = cpu.read(add) | cpu.read(add + 1) << 8;
+		final int effectiveAdd = (add + cpu.getY()) % 65536;
 		if(add >>8 != ((effectiveAdd) >> 8)) {
 			cpu.setPageBoundaryFlag();
 		}
