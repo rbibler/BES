@@ -140,6 +140,10 @@ public class CPU6502 implements CPU {
 	public void setAddress(int address) {
 		this.address = address;
 	}
+	
+	public int getAddress() {
+		return address;
+	}
 
 	public void setAccumulator(int accumulator) {
 		this.accumulator = accumulator;
