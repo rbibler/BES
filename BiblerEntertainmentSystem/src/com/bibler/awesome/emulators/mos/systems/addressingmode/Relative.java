@@ -6,12 +6,11 @@ public class Relative implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
-		int PC = cpu.getPC();
+		int offset = cpu.read(cpu.getPC());
 		cpu.incrementPC();
-		int add = cpu.read(PC);
-		add = add > 127 ? (add - 256) : add;
-		cpu.setAddress(add);
-		return (PC + add);
+		offset = offset > 127 ? (offset - 256) : offset;
+		cpu.setAddress(offset);
+		return (cpu.getPC() + offset);
 	}
 
 }

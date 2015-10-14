@@ -11,6 +11,9 @@ public class BVC extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	int operand = mode.read(cpu);
+    	if(cpu.getOverflow() == 0) {
+    		cpu.setPC(operand);
+    	}
     } 
 }

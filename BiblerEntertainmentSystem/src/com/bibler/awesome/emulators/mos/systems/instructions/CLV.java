@@ -11,6 +11,6 @@ public class CLV extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        cpu.updateOverflow(0);
     } 
 }

@@ -11,6 +11,6 @@ public class CLD extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        cpu.updateDecimal(0);
     } 
 }

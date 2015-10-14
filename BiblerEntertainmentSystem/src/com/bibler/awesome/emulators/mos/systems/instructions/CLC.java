@@ -11,6 +11,7 @@ public class CLC extends Instruction {
 
     @Override 
     public void execute() { 
+    	cpu.updateCarry(0);
         
     } 
 }

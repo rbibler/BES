@@ -185,6 +185,24 @@ public class CPU6502 implements CPU {
 		statusRegister |= sign << 7;
 	}
 	
+	public int getInterrupt() {
+		return statusRegister >> 2 & 1;
+	}
+	
+	public void updateInterrupt(int interrupt) {
+		statusRegister &= ~(1 << 2);
+		statusRegister |= interrupt << 2;
+	}
+	
+	public int getDecimal() {
+		return statusRegister >> 3 & 1;
+	}
+	
+	public void updateDecimal(int decimal) {
+		statusRegister &= ~(1 << 3);
+		statusRegister |= decimal << 3;
+	}
+	
 	private void setupArrays() {
 		opCodeInstructions = new Instruction[] {
 			new BRK(this, new Implied(),"BRK"), new ORA(this, new IndirectX(),"ORA"), new KIL(this, new Implied(),"KIL"), new SLO(this, new IndirectX(),"SLO"), new NOP(this, new ZeroPage(),"NOP"), new ORA(this, new ZeroPage(),"ORA"), new ASL(this, new ZeroPage(),"ASL"), new SLO(this, new ZeroPage(),"SLO"), new PHP(this, new Implied(),"PHP"), new ORA(this, new Immediate(),"ORA"), new ASL(this, new Accumulator(),"ASL"), new ANC(this, new Immediate(),"ANC"), new NOP(this, new Absolute(),"NOP"), new ORA(this, new Absolute(),"ORA"), new ASL(this, new Absolute(),"ASL"), new SLO(this, new Absolute(),"SLO"), 

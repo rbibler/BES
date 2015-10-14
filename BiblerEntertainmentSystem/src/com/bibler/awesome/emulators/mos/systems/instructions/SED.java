@@ -11,6 +11,6 @@ public class SED extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        cpu.updateDecimal(1);
     } 
 }

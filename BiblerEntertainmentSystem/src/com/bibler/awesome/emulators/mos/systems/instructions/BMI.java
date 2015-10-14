@@ -11,6 +11,9 @@ public class BMI extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	int operand = mode.read(cpu);
+    	if(cpu.getSign() == 1) {
+    		cpu.setPC(operand);
+    	}
     } 
 }

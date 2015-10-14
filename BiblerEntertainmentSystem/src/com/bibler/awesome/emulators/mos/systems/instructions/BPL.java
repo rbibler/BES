@@ -11,6 +11,9 @@ public class BPL extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	int operand = mode.read(cpu);
+    	if(cpu.getSign() == 0) {
+    		cpu.setPC(operand);
+    	} 
     } 
 }

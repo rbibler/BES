@@ -11,6 +11,6 @@ public class SEI extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        cpu.updateInterrupt(1);
     } 
 }

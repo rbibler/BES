@@ -11,6 +11,9 @@ public class BNE extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int operand = mode.read(cpu);
+    	if(cpu.getZero() == 0) {
+    		cpu.setPC(operand);
+    	}
     } 
 }

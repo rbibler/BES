@@ -11,6 +11,6 @@ public class CLI extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        cpu.updateInterrupt(0);
     } 
 }

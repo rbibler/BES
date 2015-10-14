@@ -11,6 +11,7 @@ public class SEC extends Instruction {
 
     @Override 
     public void execute() { 
+    	cpu.updateCarry(1);
         
     } 
 }

@@ -11,6 +11,10 @@ public class BCS extends Instruction {
 
     @Override 
     public void execute() { 
+    	int operand = mode.read(cpu);
+    	if(cpu.getCarry() == 1) {
+    		cpu.setPC(operand);
+    	}
         
     } 
 }
