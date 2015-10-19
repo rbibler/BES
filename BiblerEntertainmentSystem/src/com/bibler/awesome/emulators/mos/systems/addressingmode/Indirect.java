@@ -6,10 +6,16 @@ public class Indirect implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
-		final int add = cpu.read(cpu.getPC());
+		final int PC = cpu.getPC();
 		cpu.incrementPC();
-		cpu.setAddress(add);
-		return add;
+		final int PCPlusOne = cpu.getPC();
+		cpu.incrementPC();
+		final int address = cpu.read(PC)  | cpu.read(PCPlusOne) << 8;
+		final int addLow = cpu.read(address);
+		int addHigh = ((address + 1) & 0xFF) + (address & 0xFF00);
+		addHigh = cpu.read(addHigh);
+		cpu.setAddress(addLow | (addHigh << 8));
+		return cpu.read(address);
 	}
 
 }

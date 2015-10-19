@@ -11,6 +11,7 @@ public class JMP extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        int operand = mode.read(cpu);
+        cpu.setPC(cpu.getAddress());
     } 
 }
