@@ -6,6 +6,7 @@ public class Accumulator implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
+		cpu.setAddress(CPU6502.ACCUMULATOR);
 		return cpu.getAccumulator();
 	}
 

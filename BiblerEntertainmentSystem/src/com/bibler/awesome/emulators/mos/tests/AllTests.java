@@ -16,6 +16,14 @@ public class AllTests {
 		suite.addTestSuite(CMPTest.class);
 		suite.addTestSuite(CPXTest.class);
 		suite.addTestSuite(CPYTest.class);
+		suite.addTestSuite(DECTest.class);
+		suite.addTestSuite(EORTest.class);
+		suite.addTestSuite(INCTest.class);
+		suite.addTestSuite(LDATest.class);
+		suite.addTestSuite(LDXTest.class);
+		suite.addTestSuite(LDYTest.class);
+		suite.addTestSuite(LSRTest.class);
+		suite.addTestSuite(NOPTest.class);
 		suite.addTestSuite(RegisterTests.class);
 		//$JUnit-END$
 		return suite;

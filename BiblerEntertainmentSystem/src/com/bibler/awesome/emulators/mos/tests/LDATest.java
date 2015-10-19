@@ -114,6 +114,42 @@ public class LDATest extends TestCase {
 		assertEquals(0, cpu.getSign());
 		assertEquals(4, cycles);
 	}
+	
+	public void testLDAIndirectX() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.setX(3);
+		cpu.setAccumulator(0);
+		cpu.write(0x8000, 0xA1);
+		cpu.write(0x8001, 0x44);
+		cpu.write(0x47, 0x00);
+		cpu.write(0x48, 0x44);
+		cpu.write(0x4400, 0x44);
+		final int opCode = cpu.fetch();
+		final int cycles = cpu.execute(opCode);
+		assertEquals(0x44, cpu.getAccumulator());
+		assertEquals(0, cpu.getZero());
+		assertEquals(0, cpu.getSign());
+		assertEquals(6, cycles);
+	}
+	
+	public void testLDAIndirectY() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.setY(3);
+		cpu.setAccumulator(0);
+		cpu.write(0x8000, 0xB1);
+		cpu.write(0x8001, 0x44);
+		cpu.write(0x44, 0x00);
+		cpu.write(0x45, 0x44);
+		cpu.write(0x4403, 0x44);
+		final int opCode = cpu.fetch();
+		final int cycles = cpu.execute(opCode);
+		assertEquals(0x44, cpu.getAccumulator());
+		assertEquals(0, cpu.getZero());
+		assertEquals(0, cpu.getSign());
+		assertEquals(5, cycles);
+	}
 
 
 }

@@ -39,6 +39,8 @@ public class CPU6502 implements CPU {
 	private int[] opCodeLengths;
 	private int[] opCodeCycles;
 	
+	public final static int ACCUMULATOR = -13;
+	
 	private CPU6502(PPU ppu) {
 		mem = new MemoryManager();
 		mem.resetAll();
@@ -97,6 +99,10 @@ public class CPU6502 implements CPU {
 	}
 	
 	public void write(int address, int data) {
+		if(address == ACCUMULATOR) {
+			setAccumulator(data);
+			return;
+		}
 		mem.write(address, data);
 	}
 	

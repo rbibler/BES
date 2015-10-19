@@ -6,6 +6,7 @@ public class Implied implements AddressingMode {
 	
 	@Override
 	public int read(CPU6502 cpu) {
+		cpu.incrementPC();
 		return 0;
 	}
 
