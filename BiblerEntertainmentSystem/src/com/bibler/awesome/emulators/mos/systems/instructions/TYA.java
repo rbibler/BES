@@ -11,6 +11,9 @@ public class TYA extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int Y = cpu.getY();
+    	cpu.setAccumulator(Y);
+    	cpu.updateZero(Y == 0 ? 1 : 0);
+    	cpu.updateSign(Y >> 7 & 1);
     } 
 }

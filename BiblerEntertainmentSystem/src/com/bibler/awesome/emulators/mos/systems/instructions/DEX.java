@@ -11,6 +11,10 @@ public class DEX extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	int X = cpu.getX();
+    	X = (X - 1) & 0xFF;
+    	cpu.setX(X);
+        cpu.updateZero(X == 0 ? 1 : 0);
+        cpu.updateSign(X >> 7 & 1);
     } 
 }

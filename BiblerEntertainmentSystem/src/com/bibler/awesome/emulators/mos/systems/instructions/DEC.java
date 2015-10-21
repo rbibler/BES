@@ -12,7 +12,7 @@ public class DEC extends Instruction {
     @Override 
     public void execute() { 
     	int operand = mode.read(cpu);
-    	operand = (operand - 1) % 256;
+    	operand = (operand - 1) & 0xFF;
     	cpu.write(cpu.getAddress(), operand);
         cpu.updateZero(operand == 0 ? 1 : 0);
         cpu.updateSign(operand >> 7 & 1);

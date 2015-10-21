@@ -4,7 +4,7 @@ import com.bibler.awesome.emulators.mos.systems.CPU6502;
 
 import junit.framework.TestCase;
 
-public class RegisterTests extends TestCase {
+public class RegisterStatusTests extends TestCase {
 	
 	private CPU6502 cpu;
 	

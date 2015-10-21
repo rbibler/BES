@@ -11,6 +11,10 @@ public class TXA extends Instruction {
 
     @Override 
     public void execute() { 
+    	final int X = cpu.getX();
+    	cpu.setAccumulator(X);
+    	cpu.updateZero(X == 0 ? 1 : 0);
+    	cpu.updateSign(X >> 7 & 1);
         
     } 
 }

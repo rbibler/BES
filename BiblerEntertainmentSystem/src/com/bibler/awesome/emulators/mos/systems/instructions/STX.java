@@ -11,6 +11,8 @@ public class STX extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	mode.read(cpu);
+    	final int X = cpu.getX();
+    	cpu.write(cpu.getAddress(), X);
     } 
 }

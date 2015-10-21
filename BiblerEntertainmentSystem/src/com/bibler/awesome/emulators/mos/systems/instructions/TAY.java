@@ -11,6 +11,9 @@ public class TAY extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	 final int accumulator = cpu.getAccumulator();
+         cpu.setY(accumulator);
+         cpu.updateZero(accumulator == 0 ? 1 : 0);
+         cpu.updateSign(accumulator >> 7 & 1);
     } 
 }

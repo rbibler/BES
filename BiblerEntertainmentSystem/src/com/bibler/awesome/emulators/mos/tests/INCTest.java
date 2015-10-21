@@ -20,6 +20,18 @@ public class INCTest extends TestCase {
 		assertEquals(5, cycles);
 	}
 	
+	public void testINCZeroPageWrap() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0xE6);
+		cpu.write(0x8001, 0x44);
+		cpu.write(0x44, 0xFF);
+		final int opCode = cpu.fetch();
+		final int cycles = cpu.execute(opCode);
+		assertEquals(0, cpu.read(0x44));
+		assertEquals(5, cycles);
+	}
+	
 	public void testINCZeroPageX() {
 		cpu = CPU6502.getInstance(null);
 		cpu.setPC(0x8000);

@@ -11,6 +11,10 @@ public class INY extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	 final int Y = cpu.getY();
+         final int value = (Y + 1) % 256;
+         cpu.setY(value);
+         cpu.updateZero(value == 0 ? 1 : 0);
+         cpu.updateSign(value >> 7 & 1);
     } 
 }

@@ -20,6 +20,18 @@ public class DECTest extends TestCase {
 		assertEquals(5, cycles);
 	}
 	
+	public void testDECZeroPageWrap() {
+		cpu = CPU6502.getInstance(null);
+		cpu.setPC(0x8000);
+		cpu.write(0x8000, 0xC6);
+		cpu.write(0x8001, 0x44);
+		cpu.write(0x44, 0x00);
+		final int opCode = cpu.fetch();
+		final int cycles = cpu.execute(opCode);
+		assertEquals(0xFF, cpu.read(0x44));
+		assertEquals(5, cycles);
+	}
+	
 	public void testDECZeroPageX() {
 		cpu = CPU6502.getInstance(null);
 		cpu.setPC(0x8000);

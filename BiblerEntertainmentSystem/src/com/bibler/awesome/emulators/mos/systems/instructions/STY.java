@@ -11,6 +11,8 @@ public class STY extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	mode.read(cpu);
+    	final int Y = cpu.getY();
+    	cpu.write(cpu.getAddress(), Y);
     } 
 }
