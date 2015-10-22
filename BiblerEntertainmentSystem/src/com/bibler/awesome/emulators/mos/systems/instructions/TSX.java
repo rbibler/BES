@@ -11,6 +11,7 @@ public class TSX extends Instruction {
 
     @Override 
     public void execute() { 
-        
+        final int SP = cpu.getSP();
+        cpu.setX(SP);
     } 
 }

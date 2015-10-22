@@ -11,6 +11,7 @@ public class TXS extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int X = cpu.getX();
+    	cpu.setSP(X);
     } 
 }

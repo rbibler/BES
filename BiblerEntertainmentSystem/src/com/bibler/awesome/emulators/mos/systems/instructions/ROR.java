@@ -11,6 +11,12 @@ public class ROR extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int operand = mode.read(cpu);
+    	final int carry = cpu.getCarry();
+    	cpu.updateCarry(operand & 1);
+    	final int value = ((operand >> 1) | (carry << 7)) % 256;
+    	cpu.updateZero(value == 0 ? 1 : 0);
+    	cpu.updateSign(value >> 7 & 1);
+    	cpu.write(cpu.getAddress(), value);
     } 
 }

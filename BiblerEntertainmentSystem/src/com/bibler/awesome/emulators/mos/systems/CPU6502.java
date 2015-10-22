@@ -23,7 +23,6 @@ public class CPU6502 implements CPU {
 	private int accumulator;
 	private int statusRegister;
 	private int SP;
-	private int SPH = 0x100;
 	
 	private MemoryManager mem;
 	private int PC = 01;
@@ -124,7 +123,7 @@ public class CPU6502 implements CPU {
 	
 
 	public void setX(int X) {
-		this.X = X;
+		this.X = X & 0xFF;
 	}
 
 	public int getX() {
@@ -132,11 +131,23 @@ public class CPU6502 implements CPU {
 	}
 	
 	public void setY(int Y) {
-		this.Y = Y;
+		this.Y = Y & 0xFF;
 	}
 
 	public int getY() {
 		return Y;
+	}
+	
+	public void setSP(int SP) {
+		this.SP = SP & 0xFF;
+	}
+	
+	public int getSP() {
+		return SP;
+	}
+	
+	public int stackPeek() {
+		return read(0x100 + ((SP + 1) & 0xFF));
 	}
 
 	public void setPageBoundaryFlag() {
@@ -152,7 +163,7 @@ public class CPU6502 implements CPU {
 	}
 
 	public void setAccumulator(int accumulator) {
-		this.accumulator = accumulator;
+		this.accumulator = accumulator & 0xFF;
 	}
 	
 	public int getCarry() {
@@ -207,6 +218,14 @@ public class CPU6502 implements CPU {
 	public void updateDecimal(int decimal) {
 		statusRegister &= ~(1 << 3);
 		statusRegister |= decimal << 3;
+	}
+	
+	public void setStatusRegister(int statusRegister) {
+		this.statusRegister = statusRegister;
+	}
+	
+	public int getStatusRegister() {
+		return statusRegister;
 	}
 	
 	private void setupArrays() {

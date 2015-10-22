@@ -42,12 +42,12 @@ public class AllTests {
 	 * LSR		X
 	 * NOP		X
 	 * ORA		X
-	 * PHA		-
-	 * PHP		-
-	 * PLA		-
-	 * PLP		-
+	 * PHA		X
+	 * PHP		X
+	 * PLA		X
+	 * PLP		X
 	 * ROL		X
-	 * ROR		-			
+	 * ROR		X			
 	 * RTI		-
 	 * RTS		-
 	 * SBC		-
@@ -87,7 +87,9 @@ public class AllTests {
 		suite.addTestSuite(ORATest.class);
 		suite.addTestSuite(RegisterStatusTests.class);
 		suite.addTestSuite(RegisterInstructionsTest.class);
+		suite.addTestSuite(StackInstructionsTest.class);
 		suite.addTestSuite(ROLTest.class);
+		suite.addTestSuite(RORTest.class);
 		suite.addTestSuite(STATest.class);
 		suite.addTestSuite(STXTest.class);
 		suite.addTestSuite(STYTest.class);

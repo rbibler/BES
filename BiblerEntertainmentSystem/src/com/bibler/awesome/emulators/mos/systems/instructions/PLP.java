@@ -11,6 +11,9 @@ public class PLP extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int SP = cpu.getSP();
+    	final int statusRegister = cpu.read(0x100 + ((SP + 1) & 0xFF));
+    	cpu.setStatusRegister(statusRegister);
+    	cpu.setSP((SP + 1) & 0xFF); 
     } 
 }
