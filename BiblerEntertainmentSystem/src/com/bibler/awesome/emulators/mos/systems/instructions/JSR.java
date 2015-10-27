@@ -11,6 +11,10 @@ public class JSR extends Instruction {
 
     @Override 
     public void execute() { 
-        
+    	final int operand = mode.read(cpu);
+    	final int PC = (cpu.getPC() - 1);
+    	cpu.stackPush(PC >> 8 & 0xFF);
+    	cpu.stackPush(PC & 0xFF);
+    	cpu.setPC(cpu.getAddress());
     } 
 }

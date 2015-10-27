@@ -11,9 +11,7 @@ public class PLA extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int SP = cpu.getSP();
-    	final int accumulator = cpu.read(0x100 + ((SP + 1) & 0xFF));
+    	final int accumulator = cpu.stackPop();
     	cpu.setAccumulator(accumulator);
-    	cpu.setSP((SP + 1) & 0xFF); 
     } 
 }

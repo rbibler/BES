@@ -149,6 +149,17 @@ public class CPU6502 implements CPU {
 	public int stackPeek() {
 		return read(0x100 + ((SP + 1) & 0xFF));
 	}
+	
+	public void stackPush(int toPush) {
+		write(SP + 0x100, toPush);
+    	setSP(SP - 1 >= 0 ? SP - 1 : 0xFF);
+	}
+	
+	public int stackPop() {
+		final int ret = read(0x100 + ((SP + 1) & 0xFF));
+    	setSP((SP + 1) & 0xFF);
+    	return ret;
+	}
 
 	public void setPageBoundaryFlag() {
 		pageBoundaryFlag = true;

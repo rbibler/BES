@@ -35,7 +35,7 @@ public class AllTests {
 	 * INX		X
 	 * INY		X
 	 * JMP		X
-	 * JSR		-
+	 * JSR		X
 	 * LDA		X
 	 * LDX		X
 	 * LDY		X
@@ -48,8 +48,8 @@ public class AllTests {
 	 * PLP		X
 	 * ROL		X
 	 * ROR		X			
-	 * RTI		-
-	 * RTS		-
+	 * RTI		X
+	 * RTS		X
 	 * SBC		-
 	 * SED		X
 	 * SEI		X
@@ -79,6 +79,7 @@ public class AllTests {
 		suite.addTestSuite(EORTest.class);
 		suite.addTestSuite(INCTest.class);
 		suite.addTestSuite(JMPTest.class);
+		suite.addTestSuite(JSRTest.class);
 		suite.addTestSuite(LDATest.class);
 		suite.addTestSuite(LDXTest.class);
 		suite.addTestSuite(LDYTest.class);
@@ -90,6 +91,8 @@ public class AllTests {
 		suite.addTestSuite(StackInstructionsTest.class);
 		suite.addTestSuite(ROLTest.class);
 		suite.addTestSuite(RORTest.class);
+		suite.addTestSuite(RTITest.class);
+		suite.addTestSuite(RTSTest.class);
 		suite.addTestSuite(STATest.class);
 		suite.addTestSuite(STXTest.class);
 		suite.addTestSuite(STYTest.class);

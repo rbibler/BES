@@ -11,6 +11,11 @@ public class RTI extends Instruction {
 
     @Override 
     public void execute() { 
+    	final int sR = cpu.stackPop();
+    	final int PCLow = cpu.stackPop();
+    	final int PCHigh = cpu.stackPop();
+    	cpu.setStatusRegister(sR);
+    	cpu.setPC(PCHigh << 8 | PCLow);
         
     } 
 }

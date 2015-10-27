@@ -12,9 +12,7 @@ public class PHP extends Instruction {
     @Override 
     public void execute() { 
     	final int statusRegister = cpu.getStatusRegister();
-    	final int SP = cpu.getSP();
-    	cpu.write(0x100 + SP, statusRegister);
-    	cpu.setSP(SP - 1 >= 0 ? SP - 1 : 0xFF);
+    	cpu.stackPush(statusRegister);
         
     } 
 }

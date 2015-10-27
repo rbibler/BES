@@ -11,6 +11,10 @@ public class RTS extends Instruction {
 
     @Override 
     public void execute() { 
+    	
+    	final int pcLow = cpu.stackPop();
+    	final int pcHigh = cpu.stackPop();
+    	cpu.setPC((pcHigh << 8 | pcLow) + 1);
         
     } 
 }

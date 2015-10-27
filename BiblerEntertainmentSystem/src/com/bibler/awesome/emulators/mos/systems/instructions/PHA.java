@@ -13,7 +13,6 @@ public class PHA extends Instruction {
     public void execute() { 
     	final int accumulator = cpu.getAccumulator();
     	int SP = cpu.getSP();
-    	cpu.write(SP + 0x100, accumulator);
-    	cpu.setSP(SP - 1 >= 0 ? SP - 1 : 0xFF);
+    	cpu.stackPush(accumulator);
     } 
 }
