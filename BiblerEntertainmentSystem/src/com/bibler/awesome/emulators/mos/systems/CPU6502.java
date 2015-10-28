@@ -24,7 +24,8 @@ public class CPU6502 implements CPU {
 	private int statusRegister;
 	private int SP;
 	
-	private MemoryManager mem;
+	//private MemoryManager mem;
+	private Memory mem;
 	private int PC = 01;
 	
 	private int X;
@@ -41,9 +42,10 @@ public class CPU6502 implements CPU {
 	public final static int ACCUMULATOR = -13;
 	
 	private CPU6502(PPU ppu) {
-		mem = new MemoryManager();
-		mem.resetAll();
-		mem.ppu = ppu;
+		//mem = new MemoryManager();
+		//mem.resetAll();
+		//mem.ppu = ppu;
+		mem = new Memory(0xFFFFFFFF);
 		this.ppu = ppu;
 		setupArrays();
 	}
@@ -88,9 +90,9 @@ public class CPU6502 implements CPU {
 		SP &= 0xFF;
 	}
 
-	public void setController(Controller controller) {
-		mem.setController(controller);
-	}
+	//public void setController(Controller controller) {
+		//mem.setController(controller);
+	//}
 	
 	
 	public int read(int address) {

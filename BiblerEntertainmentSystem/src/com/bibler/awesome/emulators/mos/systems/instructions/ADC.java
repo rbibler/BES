@@ -16,11 +16,8 @@ public class ADC extends Instruction {
     	final int accumulator = cpu.getAccumulator();
     	int value = accumulator + carry + operand;
     	carry = (value >> 8) & 1;
-    	int overflow = 0;
-    	if(accumulator >> 7 == operand >> 7 && value >> 7 != operand >> 7) {
-    		overflow = 1;
-    	}
-    	value %= 256;
+    	int overflow = ((accumulator ^ value) & (operand ^ value) & 0x80) == 0 ? 0 : 1;;
+    	value &= 0xFF;
     	cpu.setAccumulator(value);
     	cpu.updateCarry(carry);
     	cpu.updateZero(value == 0 ? 1 : 0);

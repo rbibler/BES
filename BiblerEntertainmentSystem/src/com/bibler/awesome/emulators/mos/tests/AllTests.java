@@ -50,7 +50,7 @@ public class AllTests {
 	 * ROR		X			
 	 * RTI		X
 	 * RTS		X
-	 * SBC		-
+	 * SBC		X
 	 * SED		X
 	 * SEI		X
 	 * STA		X
@@ -88,11 +88,12 @@ public class AllTests {
 		suite.addTestSuite(ORATest.class);
 		suite.addTestSuite(RegisterStatusTests.class);
 		suite.addTestSuite(RegisterInstructionsTest.class);
-		suite.addTestSuite(StackInstructionsTest.class);
 		suite.addTestSuite(ROLTest.class);
 		suite.addTestSuite(RORTest.class);
 		suite.addTestSuite(RTITest.class);
 		suite.addTestSuite(RTSTest.class);
+		suite.addTestSuite(SBCTest.class);
+		suite.addTestSuite(StackInstructionsTest.class);
 		suite.addTestSuite(STATest.class);
 		suite.addTestSuite(STXTest.class);
 		suite.addTestSuite(STYTest.class);
