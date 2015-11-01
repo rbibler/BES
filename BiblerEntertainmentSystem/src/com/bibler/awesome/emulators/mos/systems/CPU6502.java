@@ -1,5 +1,9 @@
 package com.bibler.awesome.emulators.mos.systems;
 
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
 import com.bibler.awesome.emulators.mos.interfaces.CPU;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.Absolute;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.AbsoluteX;
@@ -17,7 +21,7 @@ import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageX;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageY;
 import com.bibler.awesome.emulators.mos.systems.instructions.*;
 
-public class CPU6502 implements CPU {
+public class CPU6502 extends Observable implements CPU {
 	
 	private volatile static CPU6502 uniqueInstance;
 	private int accumulator;
@@ -38,6 +42,7 @@ public class CPU6502 implements CPU {
 	private Instruction[] opCodeInstructions;
 	private int[] opCodeLengths;
 	private int[] opCodeCycles;
+	private ArrayList<Observer> observers = new ArrayList<Observer>();
 	
 	public final static int ACCUMULATOR = -13;
 	
@@ -45,7 +50,7 @@ public class CPU6502 implements CPU {
 		//mem = new MemoryManager();
 		//mem.resetAll();
 		//mem.ppu = ppu;
-		mem = new Memory(0xFFFFFFFF);
+		mem = new Memory(0xFFFFFF);
 		this.ppu = ppu;
 		setupArrays();
 	}
@@ -59,6 +64,10 @@ public class CPU6502 implements CPU {
 			}
 		}
 		return uniqueInstance;
+	}
+	
+	public void registerObserver(Observer observer) {
+		observers.add(observer);
 	}
 	
 	@Override
@@ -76,6 +85,8 @@ public class CPU6502 implements CPU {
 	public int execute(int opCode) {
 		int cycles = opCodeCycles[opCode];
 		opCodeInstructions[opCode].execute();
+		opCodeInstructions[opCode].printMnemonic();
+		System.out.print(" Carry: " + getCarry());
 		if(pageBoundaryFlag) {
 			pageBoundaryFlag = false;
 			cycles++;
@@ -94,6 +105,12 @@ public class CPU6502 implements CPU {
 		//mem.setController(controller);
 	//}
 	
+	private void notifyObservers(int address, int data) {
+		for(Observer observer : observers) {
+			observer.update(this, new int[] {address, data} );
+		}
+	}
+	
 	
 	public int read(int address) {
 		return mem.read(address);
@@ -104,6 +121,7 @@ public class CPU6502 implements CPU {
 			setAccumulator(data);
 			return;
 		}
+		notifyObservers(address, data);
 		mem.write(address, data);
 	}
 	

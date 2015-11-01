@@ -39,7 +39,8 @@ public class HexTable extends JTable {
 	private int highlightMode = HIGHLIGHT_UP_TO;
 	private InfoPanel infoPanel;
 	
-	public HexTable() {
+	public HexTable(int size) {
+		model = new HexTableModel(size);
 		this.setModel(model);
 		initialize();
 	}
@@ -54,6 +55,10 @@ public class HexTable extends JTable {
 	
 	public void update() {
 		model.fireTableDataChanged();
+	}
+	
+	public void updateCell(int address, int data) {
+		model.updateCell(address, data);
 	}
 	
 	public void initialize() {

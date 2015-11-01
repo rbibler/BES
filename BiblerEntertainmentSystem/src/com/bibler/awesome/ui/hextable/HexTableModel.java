@@ -58,8 +58,6 @@ public class HexTableModel extends AbstractTableModel {
 		if(index >= data.length) {
 			return "00";
 		}
-		//byte[] bytes = new byte[] {(byte) (data[index])};
-		//return StringUtils.bytesToHex(bytes, 1);
 		String ret = Integer.toHexString(data[index] & 0xFF);
 		ret = ret.trim();
 		if(ret.length() < 2) {
@@ -72,11 +70,19 @@ public class HexTableModel extends AbstractTableModel {
 	
 	public void setNewDataArray(int[] data) {
 		this.data = data;
-		this.fireTableDataChanged();
+		fireTableDataChanged();
 	}
 	
 	public void addByte(byte toAdd) {
 		data[currentIndex++] = toAdd;
+		fireTableDataChanged();
+	}
+	
+	public void updateCell(int address, int dataToUpdate) {
+		if(address >= data.length) {
+			return;
+		}
+		data[address] = dataToUpdate;
 		fireTableDataChanged();
 	}
 	
@@ -97,7 +103,6 @@ public class HexTableModel extends AbstractTableModel {
 
 	public void setByte(byte b, int currentAddress) {
 		data[currentAddress & 0xFF] = b & 0xFF;
-		//changedValues.add(currentAddress);
 		fireTableDataChanged();
 	}
 

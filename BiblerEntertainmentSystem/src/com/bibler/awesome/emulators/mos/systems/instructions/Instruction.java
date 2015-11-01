@@ -16,5 +16,9 @@ public abstract class Instruction {
 	}
 	
 	public abstract void execute();
+	
+	public void printMnemonic() {
+		System.out.print(mnemonic);
+	}
 
 }

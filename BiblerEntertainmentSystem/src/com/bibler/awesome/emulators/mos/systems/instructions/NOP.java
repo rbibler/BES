@@ -11,7 +11,6 @@ public class NOP extends Instruction {
 
     @Override 
     public void execute() { 
-    	mode.read(cpu);
-        
+    	return;
     } 
 }

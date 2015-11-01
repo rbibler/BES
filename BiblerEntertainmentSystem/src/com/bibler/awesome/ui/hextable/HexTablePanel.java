@@ -17,19 +17,18 @@ public class HexTablePanel extends JPanel {
 	private InfoPanel infoPanel;
 	private JScrollPane pane;
 	
-	public HexTablePanel() {
+	public HexTablePanel(HexTable table) {
 		super();
+		this.table = table;
 		initialize();
 	}
 	
 	private void initialize() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		setLayout(layout);
-		table = new HexTable();
 		RowTable row = new RowTable(table);
 		pane = new JScrollPane(table);
 		pane.setRowHeaderView(row);
-		//pane.setPreferredSize(new Dimension(500, 500));
 		add(pane);
 		infoPanel = new InfoPanel();
 		add(infoPanel);

@@ -1,4 +1,4 @@
-package com.bibler.awesome.emulators.mos.ui;
+package com.bibler.awesome.emulators.mos.nes.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;

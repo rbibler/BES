@@ -32,7 +32,7 @@ public class SBCTest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(0x60, cpu.getAccumulator());
-		assertEquals(1, cpu.getCarry());
+		assertEquals(0, cpu.getCarry());
 		assertEquals(0, cpu.getOverflow());
 	}
 	
@@ -46,7 +46,7 @@ public class SBCTest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(0xA0, cpu.getAccumulator());
-		assertEquals(1, cpu.getCarry());
+		assertEquals(0, cpu.getCarry());
 		assertEquals(1, cpu.getOverflow());
 	}
 	
@@ -60,7 +60,7 @@ public class SBCTest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(0xE0, cpu.getAccumulator());
-		assertEquals(1, cpu.getCarry());
+		assertEquals(0, cpu.getCarry());
 		assertEquals(0, cpu.getOverflow());
 	}
 	
@@ -74,7 +74,7 @@ public class SBCTest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(0x60, cpu.getAccumulator());
-		assertEquals(0, cpu.getCarry());
+		assertEquals(1, cpu.getCarry());
 		assertEquals(1, cpu.getOverflow());
 	}
 	

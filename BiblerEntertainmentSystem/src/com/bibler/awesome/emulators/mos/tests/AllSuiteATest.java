@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import com.bibler.awesome.emulators.mos.controllers.MemoryViewController;
 import com.bibler.awesome.emulators.mos.systems.CPU6502;
+import com.bibler.awesome.emulators.mos.ui.MemoryView;
 
 import junit.framework.TestCase;
 
@@ -21,7 +23,7 @@ public class AllSuiteATest extends TestCase {
 	
 	private void loadProgram() {
 		BufferedInputStream input = null;
-		File f = new File("C:/users/ryan/downloads/AllSuiteA/AllSuiteAtrim.bin");
+		File f = new File("C:/users/ryan/downloads/AllSuiteA/AllSuiteATrim.bin");
 		byte[] bytes = new byte[0x5C3];
 		try {
 			input = new BufferedInputStream(new FileInputStream(f));
@@ -35,17 +37,27 @@ public class AllSuiteATest extends TestCase {
 			}
 		}
 		for(int i = 0; i < bytes.length; i++) {
-			cpu.write(0x4000 + i, bytes[i]);
+			cpu.write(0x4000 + i, bytes[i] & 0xFF);
 		}
 		cpu.setPC(0x4000);
+		setupMemoryTable();
+	}
+	
+	private void setupMemoryTable() {
+		MemoryView view = new MemoryView(0xFFFFFF);
+		MemoryViewController viewController = new MemoryViewController(view);
+		cpu.registerObserver(viewController);
+		
 	}
 	
 	private void executeProgram() {
 		int opCode;
-		long start = System.currentTimeMillis();
-		while(System.currentTimeMillis() - start < 2000) {
+		int executedInstructions = 0;
+		while(executedInstructions < 1000) {
 			opCode = (cpu.fetch() & 0xFF);
 			cpu.execute(opCode);
+			System.out.println(" Acc: " + Integer.toHexString(cpu.getAccumulator()));
+			executedInstructions++;
 		}
 		assertEquals(0xFF, cpu.read(0x210));
 	}

@@ -22,6 +22,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.bibler.awesome.emulators.mos.interfaces.Notifiable;
 import com.bibler.awesome.emulators.mos.listeners.MenuListener;
+import com.bibler.awesome.emulators.mos.nes.ui.NESPanel;
+import com.bibler.awesome.emulators.mos.nes.ui.NameTableFrame;
+import com.bibler.awesome.emulators.mos.nes.ui.PatternTableFrame;
 import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Controller;
 import com.bibler.awesome.emulators.mos.systems.Emulator;
