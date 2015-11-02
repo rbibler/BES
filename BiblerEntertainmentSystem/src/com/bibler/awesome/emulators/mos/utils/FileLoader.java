@@ -27,6 +27,8 @@ public class FileLoader {
 	public static CPU6502 loadFile(File f, MainFrame frame) {
 		if(f == null) {
 			f = getFile(frame);
+			if(f == null)
+				return null;
 		}
 		if(f.getName().toLowerCase().contains(".nes")) {
 			return loadNES(getInput(f));
@@ -71,11 +73,10 @@ public class FileLoader {
 		loadPrg(input, prg, cpu);
 		loadChr(input, chr, cpu);
 		int add = ((prg * 0x4000) + 0x8000) - 4;
-		int pcL = cpu.mem.read(add);
-		int pcH = cpu.mem.read(add + 1);
-		cpu.PC = pcH << 8 | pcL;
-		//cpu.PC = 0x8005;
-		cpu.ppu.setMirroring(horiz, vert);
+		int pcL = cpu.read(add);
+		int pcH = cpu.read(add + 1);
+		cpu.setPC(pcH << 8 | pcL);
+		cpu.getPPU().setMirroring(horiz, vert);
 		return cpu;
 	}
 	
@@ -85,7 +86,7 @@ public class FileLoader {
 		int loadenBytes = 0;
 		int result = 0;
 		byte[] read = new byte[1];
-		MemoryManager mem = cpu.mem;
+		MemoryManager mem = cpu.getMem();
 		try {
 			while(result >= 0 && loadenBytes < bytesToLoad) {
 				result = input.read(read);
@@ -108,7 +109,7 @@ public class FileLoader {
 		int result = 0;
 		byte[] read = new byte[1];
 		int address = 0;
-		PPUMemoryManager mem = cpu.ppu.manager;
+		PPUMemoryManager mem = cpu.getPPU().manager;
 		try {
 			while(result >= 0 && loadenBytes < bytesToLoad) {
 				result = input.read(read);
@@ -137,7 +138,7 @@ public class FileLoader {
 	}
 	
 	private static CPU6502 setupCPU() {
-		return new CPU6502(new PPU());
+		return CPU6502.getInstance(new PPU());
 	}
 	
 	private static BufferedInputStream getInput(File f) {
@@ -149,7 +150,7 @@ public class FileLoader {
 	}
 	
 	private static File getFile(MainFrame frame) {
-		chooser.setCurrentDirectory(new File("C:/users/rbibl/desktop/upload/nes stuff/roms"));
+		chooser.setCurrentDirectory(new File("C:/users/ryan/desktop/upload/nes stuff/roms"));
 		int val = chooser.showOpenDialog(frame);
 		if(val == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile();

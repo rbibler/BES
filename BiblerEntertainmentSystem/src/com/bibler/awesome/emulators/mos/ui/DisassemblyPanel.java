@@ -101,34 +101,35 @@ public class DisassemblyPanel extends JScrollPane {
 	}
 	
 	public void processFile(CPU6502 cpu) {
-		int[] program = cpu.mem.consolidateMemory();
+		int[] program = cpu.getMem().consolidateMemory();
 		StringBuilder builder = new StringBuilder();
 		int opCode;
-		int length;
 		int lineCount = 0;
-		String name;
-		String operands;
-		for(int i = 0; i < program.length; i++) {
-			pc2Line.put(i, lineCount++);
-			operands = " ";
+		int length;
+		int arg1 = 0;
+		int arg2 = 0;
+		for(int i = 0; i < program.length; i += length) {
+			pc2Line.put(i + 0x8000, lineCount++);
 			opCode = (program[i] & 0xFF);
+			
 			builder.append(StringUtils.formatNumber(i, 4));
 			builder.append("    ");
-			if(opCode == 0) {
-				name = ".db";
-				operands = " $00";
-			} else {
-				name = OpcodeTables.opcodes[opCode];
-				length = OpcodeTables.length[opCode] - 1;
-				for(int j = 0; j < length; j++) {
-					try {
-					operands += StringUtils.formatNumber(program[i + 1 + j], 2);
-					} catch(Exception e) {}
+			length = OpcodeTables.length[opCode];
+			length = length > 0 ? length : 1;
+			try {
+				if(length == 2) {
+					arg1 = program[i + 1];
+				} else if(length == 3) {
+					arg1 = program[i + 1];
+					arg2 = program[i + 2];
 				}
-				i += length;
-			}
-			builder.append(name + operands);
+			
+				String s = String.format(OpcodeTables.formattedOpCodes[opCode], arg1, arg2);
+				builder.append(s);
+			} catch(Exception e) {}
 			builder.append("\n");
+			arg1 = 0;
+			arg2 = 0;
 		}
 		disassemblyArea.setText(builder.toString());
 		this.scrollRectToVisible(new Rectangle(0, 0, 0, 0));

@@ -482,15 +482,7 @@ public class PPU {
 				scanline = 0;
 				mainFrame.renderFrame(bitmap);
 				emulator.frameAlert(0);
-				logNewFrame();
 			}
-		}
-	}
-	
-	private void logNewFrame() {
-		logger.log("Frame: " + frameCount, true);
-		for(int i = 0; i < 4; i++) {
-			logger.log("------------------------------------------------------- ", true);
 		}
 	}
 	
