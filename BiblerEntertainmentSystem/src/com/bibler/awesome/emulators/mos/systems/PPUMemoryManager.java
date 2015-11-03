@@ -1,7 +1,5 @@
 package com.bibler.awesome.emulators.mos.systems;
 
-import com.bibler.awesome.emulators.mos.ui.MemoryFrame;
-
 public class PPUMemoryManager {
 	
 	Memory patternTable0;
@@ -17,7 +15,7 @@ public class PPUMemoryManager {
 	Memory bgPalette;
 	Memory spritePalette;
 	Memory OAM;
-	public MemoryFrame frame;
+	//public MemoryFrame frame;
 	private boolean horiz;
 	private boolean vert;
 	
@@ -111,9 +109,9 @@ public class PPUMemoryManager {
 		} else if(address >= 0x4000) {
 			OAM.write(address - 0x4000, data);
 		}
-		if(frame != null) {
-		frame.updateTable(address, data, true);
-		}
+		//if(frame != null) {
+		//frame.updateTable(address, data, true);
+		//}
 	}
 	
 	int[] readNextSprite(int index) {

@@ -69,7 +69,7 @@ public class OpcodeTables {
 			2, 2, 2, 2, 2, 2, 2, 2, 
 			1, 2, 1, 2, 3, 3, 3, 3, 
 			2, 2, 1, 2, 2, 2, 2, 2, 
-			1, 3, 1, 3, 3, 3, 3, 3
+			1, 3, 1, 3, 3, 3, 3, 1
 	};
 	
 	public static int[] cycles = new int[] {
@@ -106,7 +106,6 @@ public class OpcodeTables {
 			2, 5, 1, 8, 4, 4, 6, 6, 
 			2, 4, 2, 7, 4, 4, 7, 7
 	};
-<<<<<<< HEAD
 	
 	public static String[] formattedOpCodes = new String[] {
         "BRK", "ORA $(%2$02X%1$02X,x)",
@@ -372,6 +371,4 @@ public class OpcodeTables {
         
 	};
        
-=======
->>>>>>> parent of dc45d53... Screwing around with the disassembler
 }

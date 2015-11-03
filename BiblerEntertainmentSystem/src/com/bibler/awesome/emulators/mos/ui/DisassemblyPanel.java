@@ -102,14 +102,10 @@ public class DisassemblyPanel extends JScrollPane {
 	}
 	
 	public void processFile(CPU6502 cpu) {
-<<<<<<< HEAD
-=======
-		int[] program = cpu.mem.consolidateMemory();
->>>>>>> parent of dc45d53... Screwing around with the disassembler
 		StringBuilder builder = new StringBuilder();
 		int opCode;
+		int lineCount = 0;
 		int length;
-<<<<<<< HEAD
 		int arg1 = 0;
 		int arg2 = 0;
 		for(int i = 0x8000; i < 0xFFFF; i += length) {
@@ -127,32 +123,9 @@ public class DisassemblyPanel extends JScrollPane {
 			}
 			String s = String.format(OpcodeTables.formattedOpCodes[opCode], arg1, arg2);
 			builder.append(s);
-=======
-		int lineCount = 0;
-		String name;
-		String operands;
-		for(int i = 0; i < program.length; i++) {
-			pc2Line.put(i, lineCount++);
-			operands = " ";
-			opCode = (program[i] & 0xFF);
-			builder.append(StringUtils.formatNumber(i, 4));
-			builder.append("    ");
-			if(opCode == 0) {
-				name = ".db";
-				operands = " $00";
-			} else {
-				name = OpcodeTables.opcodes[opCode];
-				length = OpcodeTables.length[opCode] - 1;
-				for(int j = 0; j < length; j++) {
-					try {
-					operands += StringUtils.formatNumber(program[i + 1 + j], 2);
-					} catch(Exception e) {}
-				}
-				i += length;
-			}
-			builder.append(name + operands);
->>>>>>> parent of dc45d53... Screwing around with the disassembler
 			builder.append("\n");
+			arg1 = 0;
+			arg2 = 0;
 		}
 		disassemblyArea.setText(builder.toString());
 		this.scrollRectToVisible(new Rectangle(0, 0, 0, 0));
