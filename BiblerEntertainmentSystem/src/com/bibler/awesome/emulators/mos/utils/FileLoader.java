@@ -90,10 +90,7 @@ public class FileLoader {
 		try {
 			while(result >= 0 && loadenBytes < bytesToLoad) {
 				result = input.read(read);
-				try {
 				mem.write(address++, read[0] & 0xFF);
-				} catch(ArrayIndexOutOfBoundsException e) {
-					e.printStackTrace();}
 				loadenBytes++;
 			}
 			input.read();

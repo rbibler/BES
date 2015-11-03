@@ -108,8 +108,7 @@ public class OpcodeTables {
 	};
 	
 	public static String[] formattedOpCodes = new String[] {
-        "BRK",
-        "ORA $(%2$02X%1$02X,x)",
+        "BRK", "ORA $(%2$02X%1$02X,x)",
         "KIL",
         "SLO $(%2$02X%1$02X,x)",
         "NOP $%1$02X",
@@ -327,7 +326,8 @@ public class OpcodeTables {
         "CLD",
         "CMP $%2$02X%1$02X,y",
         "NOP",
-        "NOP $%2$02X%1$02X,x",
+        "DCP $%2$02X%1$02X,x",
+        "NOP",
         "CMP $%2$02X%1$02X,x",
         "DEC $%2$02X%1$02X,x",
         "DCP $%2$02X%1$02X,x",

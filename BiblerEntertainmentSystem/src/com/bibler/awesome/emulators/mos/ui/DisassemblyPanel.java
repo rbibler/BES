@@ -1,6 +1,7 @@
 package com.bibler.awesome.emulators.mos.ui;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -101,32 +102,27 @@ public class DisassemblyPanel extends JScrollPane {
 	}
 	
 	public void processFile(CPU6502 cpu) {
-		int[] program = cpu.getMem().consolidateMemory();
 		StringBuilder builder = new StringBuilder();
 		int opCode;
 		int lineCount = 0;
 		int length;
 		int arg1 = 0;
 		int arg2 = 0;
-		for(int i = 0; i < program.length; i += length) {
-			pc2Line.put(i + 0x8000, lineCount++);
-			opCode = (program[i] & 0xFF);
-			
+		for(int i = 0x8000; i < 0xFFFF; i += length) {
+			pc2Line.put(i, lineCount++);
+			opCode = (cpu.read(i));
 			builder.append(StringUtils.formatNumber(i, 4));
 			builder.append("    ");
 			length = OpcodeTables.length[opCode];
-			length = length > 0 ? length : 1;
-			try {
-				if(length == 2) {
-					arg1 = program[i + 1];
-				} else if(length == 3) {
-					arg1 = program[i + 1];
-					arg2 = program[i + 2];
-				}
-			
-				String s = String.format(OpcodeTables.formattedOpCodes[opCode], arg1, arg2);
-				builder.append(s);
-			} catch(Exception e) {}
+			//length = length > 0 ? length : 1;
+			if(length == 2) {
+				arg1 = cpu.read(i + 1);
+			} else if(length == 3) {
+				arg1 = cpu.read(i + 1);
+				arg2 = cpu.read(i + 2);
+			}
+			String s = String.format(OpcodeTables.formattedOpCodes[opCode], arg1, arg2);
+			builder.append(s);
 			builder.append("\n");
 			arg1 = 0;
 			arg2 = 0;
@@ -136,21 +132,44 @@ public class DisassemblyPanel extends JScrollPane {
 	}
 	
 	public void highlightLine(int line2Highlight, HighlightPainter painter) {
-		int line = 0;
+		Point p = getStartEnd(line2Highlight);
+		if(p.x < 0 || p.y < 0)
+			return;
 		try {
-		line = pc2Line.get(line2Highlight);
-		} catch(NullPointerException e) {
-			line = 0;
-		}
-		int start;
-		int end;
+			disassemblyArea.getHighlighter().addHighlight(p.x, p.y, painter);
+			scrollTo(p.x);
+		} catch (BadLocationException e) {}
+	}
+	
+	public void dehighlightLine(int line2Highlight, HighlightPainter painter) {
+		Point p = getStartEnd(line2Highlight);
+		if(p.x < 0 || p.y < 0) 
+			return;
+		Highlight h = findHighlight(p.x, p.y);
+		if(h == null)
+			return;
+		disassemblyArea.getHighlighter().removeHighlight(h);
+	}
+	
+	private Point getStartEnd(int line) {
+		line = pc2Line.get(line);
+		int start = -1;
+		int end = -1;
 		try {
 			start = disassemblyArea.getLineStartOffset(line);
 			end = disassemblyArea.getLineEndOffset(line);
-			disassemblyArea.getHighlighter().addHighlight(start, end, painter);
-			scrollTo(start);
-		} catch (BadLocationException e) {}
-		
+		} catch(BadLocationException e) {}
+		return new Point(start, end);
+	}
+	
+	private Highlight findHighlight(int start, int end) {
+		Highlight[] highlights = disassemblyArea.getHighlighter().getHighlights();
+		for(Highlight highlight : highlights) {
+			if(highlight.getStartOffset() == start && highlight.getEndOffset() == end) {
+				return highlight;
+			}
+		}
+		return null;
 	}
 
 	public void scrollTo(int start) throws BadLocationException {
