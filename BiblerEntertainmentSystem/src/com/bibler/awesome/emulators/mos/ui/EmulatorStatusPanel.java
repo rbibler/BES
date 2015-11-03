@@ -42,12 +42,17 @@ public class EmulatorStatusPanel extends JPanel {
 	private JTextField pcField;
 	private JTextField spField;
 	private JTextField cyclesField;
+	private Emulator emulator;
 	
 	SpringLayout layout = new SpringLayout();
 	
 	public EmulatorStatusPanel() {
 		super();
 		initialize();
+	}
+	
+	public void setEmulator(Emulator emulator) {
+		this.emulator = emulator;
 	}
 	
 	private void initialize() {
@@ -178,17 +183,18 @@ public class EmulatorStatusPanel extends JPanel {
 		
 	}
 
-	public void updatePanel(CPU6502 cpu, int cycles) {
-		aField.setText(StringUtils.formatNumber(cpu.getAccumulator(), 2));
-		xField.setText(StringUtils.formatNumber(cpu.getX(), 2));
-		yField.setText(StringUtils.formatNumber(cpu.getY(), 2));
-		pcField.setText(StringUtils.formatNumber(cpu.getPC(), 4));
-		spField.setText("01" + StringUtils.formatNumber(cpu.getSP(), 2));
-		cyclesField.setText("" + cycles);
-		int c = cpu.getCarry();
-		int z = cpu.getZero();
-		int n = cpu.getSign();
-		int v = cpu.getOverflow();
+	public void updatePanel() {
+		CPU6502 cpu = emulator.getCPU();
+		aField.setText(StringUtils.formatNumber(cpu.accumulator, 2));
+		xField.setText(StringUtils.formatNumber(cpu.X, 2));
+		yField.setText(StringUtils.formatNumber(cpu.Y, 2));
+		pcField.setText(StringUtils.formatNumber(cpu.PC, 4));
+		spField.setText("01" + StringUtils.formatNumber(cpu.SP, 2));
+		cyclesField.setText("" + emulator.getCycles());
+		int c = emulator.getCPU().carry;
+		int z = emulator.getCPU().zero;
+		int n = emulator.getCPU().negative;
+		int v = emulator.getCPU().overflow;
 		if(c == 1) {
 			C.setForeground(Color.RED);
 		} else {
@@ -214,4 +220,6 @@ public class EmulatorStatusPanel extends JPanel {
 		N.repaint();
 		V.repaint();
 	}
+	
+
 }

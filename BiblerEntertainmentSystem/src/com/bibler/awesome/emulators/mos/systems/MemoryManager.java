@@ -2,6 +2,8 @@ package com.bibler.awesome.emulators.mos.systems;
 
 import java.util.Arrays;
 
+import com.bibler.awesome.emulators.mos.ui.MemoryFrame;
+
 public class MemoryManager {
 
 	Memory cpuRam;
@@ -11,7 +13,7 @@ public class MemoryManager {
 	Memory sRam;
 	Memory prgRom;
 	Controller controller;
-	//MemoryFrame frame;
+	MemoryFrame frame;
 	
 	PPU ppu;
 	
@@ -22,9 +24,9 @@ public class MemoryManager {
 		initializeMemoryBanks();
 	}
 	
-	//public void setMemoryFrame(MemoryFrame frame) {
-		//this.frame = frame;
-	//}
+	public void setMemoryFrame(MemoryFrame frame) {
+		this.frame = frame;
+	}
 	
 	public void setController(Controller controller) {
 		this.controller = controller;
@@ -65,9 +67,9 @@ public class MemoryManager {
 		} else if(address < 0x10000) {
 			prgRom.write(address - 0x8000, data);
 		}
-		//if(frame != null && address > 0) {
-			//frame.updateTable(address, data, false);
-		//}
+		if(frame != null && address > 0) {
+			frame.updateTable(address, data, false);
+		}
 	}
 	
 	public void executeDAM(int address) {
@@ -112,9 +114,9 @@ public class MemoryManager {
 	}
 	
 	public int[] consolidateMemory() {
-		int[] ret = new int[0x8000];
+		int[] ret = new int[0xFFFF];
 		for(int i = 0; i < ret.length; i++) {
-			ret[i] = this.read(0x8000 + i);
+			ret[i] = this.read(i);
 		}
 		return ret;
 	}

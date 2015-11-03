@@ -4,11 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -19,6 +20,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.bibler.awesome.emulators.mos.interfaces.Notifiable;
 import com.bibler.awesome.emulators.mos.listeners.MenuListener;
 import com.bibler.awesome.emulators.mos.nes.ui.NESPanel;
 import com.bibler.awesome.emulators.mos.nes.ui.NameTableFrame;
@@ -26,21 +28,28 @@ import com.bibler.awesome.emulators.mos.nes.ui.PatternTableFrame;
 import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Controller;
 import com.bibler.awesome.emulators.mos.systems.Emulator;
+import com.bibler.awesome.emulators.mos.systems.Memory;
+import com.bibler.awesome.emulators.mos.systems.PPU;
 import com.bibler.awesome.emulators.mos.utils.FileLoader;
+import com.bibler.awesome.ui.hextable.HexTable;
+import com.bibler.awesome.ui.hextable.HexTablePanel;
 
-public class MainFrame extends JFrame implements Observer {
+public class MainFrame extends JFrame implements Notifiable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2428105998995291290L;
 
+	private HexTable memTable;
 	private JPanel mainPanel;
 	private GridBagConstraints gbc;
 	private DisassemblyPanel disassemblyPanel;
+	private HexTablePanel memTablePanel;
 	private EmulatorStatusPanel statusPanel;
 	private Emulator emulator;
 	private NESPanel nesPanel;
+	private MemoryFrame memFrame = new MemoryFrame();
 	private Controller controller = new Controller();
 	private PatternTableFrame ptFrame;
 	private NameTableFrame ntFrame;
@@ -126,22 +135,21 @@ public class MainFrame extends JFrame implements Observer {
 	
 	public void open() {
 		CPU6502 cpu = FileLoader.loadFile(null, this);
-		if(cpu == null)
-			return;
 		updateDisassemblyPanel(cpu);
 		emulator = new Emulator();
 		emulator.setCPU(cpu);
-		emulator.registerObserver(this);
+		emulator.setNotifiable(this);
+		statusPanel.setEmulator(emulator);
 		disassemblyPanel.setEmulator(emulator);
-		emulator.getCPU().getPPU().setMainFrame(this);
-		disassemblyPanel.currentLine(emulator.getCPU().getPC());
-		//memFrame.setPPUManager(emulator.getPPU().getManager());
-		//memFrame.setCPUManager(cpu.mem);
+		emulator.getCPU().ppu.setMainFrame(this);
+		disassemblyPanel.currentLine(emulator.getCPU().PC);
+		memFrame.setPPUManager(emulator.getPPU().getManager());
+		memFrame.setCPUManager(cpu.mem);
 		cpu.setController(controller);
 		nesPanel.setController(controller);
 		nesPanel.requestFocus();
-		ptFrame.setPPU(cpu.getPPU());
-		ntFrame.setPPU(cpu.getPPU());
+		ptFrame.setPPU(cpu.ppu);
+		ntFrame.setPPU(cpu.ppu);
 	}
 	
 	private void updateDisassemblyPanel(CPU6502 cpu) {
@@ -165,11 +173,11 @@ public class MainFrame extends JFrame implements Observer {
 	}
 	
 	public void showMemFrame() {
-		//memFrame.showTheFrame();
+		memFrame.showTheFrame();
 	}
 	
 	public void switchMemTables() {
-		//memFrame.switchTables();
+		memFrame.switchTables();
 	}
 	
 	public void showPatternTableFrame() {
@@ -273,6 +281,14 @@ public class MainFrame extends JFrame implements Observer {
 		setJMenuBar(menuBar);
 	}
 	
+	public void onNotification(Object notifier) {
+		if(!(notifier instanceof Emulator)) {
+			return;
+		}
+		statusPanel.updatePanel();
+		disassemblyPanel.currentLine(emulator.getCPU().PC);
+	}
+	
 	public void renderFrame(int[] bitmap) {
 		nesPanel.renderFrame(bitmap);
 	}
@@ -331,16 +347,7 @@ public class MainFrame extends JFrame implements Observer {
 
 	public void shutdown() {
 		try {
-			emulator.getCPU().getPPU().getLogger().close();
+			emulator.getCPU().ppu.getLogger().close();
 		} catch(NullPointerException e) {}
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		if(!(o instanceof Emulator))
-			return;
-		final CPU6502 cpu = ((Emulator) o).getCPU();
-		statusPanel.updatePanel(cpu, ((Emulator) o).getCycles());
-		disassemblyPanel.currentLine(cpu.getPC());
 	}
 }

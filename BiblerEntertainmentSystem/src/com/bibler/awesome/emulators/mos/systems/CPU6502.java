@@ -20,7 +20,6 @@ import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPage;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageX;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageY;
 import com.bibler.awesome.emulators.mos.systems.instructions.*;
-import com.bibler.awesome.emulators.mos.utils.OpcodeTables;
 
 public class CPU6502 extends Observable implements CPU {
 	
@@ -29,8 +28,8 @@ public class CPU6502 extends Observable implements CPU {
 	private int statusRegister;
 	private int SP;
 	
-	private MemoryManager mem;
-	//private Memory mem;
+	//private MemoryManager mem;
+	private Memory mem;
 	private int PC = 01;
 	
 	private int X;
@@ -48,9 +47,10 @@ public class CPU6502 extends Observable implements CPU {
 	public final static int ACCUMULATOR = -13;
 	
 	private CPU6502(PPU ppu) {
-		mem = new MemoryManager();
-		mem.resetAll();
-		mem.ppu = ppu;
+		//mem = new MemoryManager();
+		//mem.resetAll();
+		//mem.ppu = ppu;
+		mem = new Memory(0xFFFFFF);
 		this.ppu = ppu;
 		setupArrays();
 	}
@@ -78,16 +78,19 @@ public class CPU6502 extends Observable implements CPU {
 	
 	@Override
 	public int fetch() {
-		return mem.read(PC++) & 0xFF;
+		return mem.read(PC++);
 	}
 	
 	@Override
 	public int execute(int opCode) {
-		opCode &= 0xFF;
 		int cycles = opCodeCycles[opCode];
 		opCodeInstructions[opCode].execute();
 		opCodeInstructions[opCode].printMnemonic();
+<<<<<<< HEAD
 		//System.out.print(" Carry: " + getCarry());
+=======
+		System.out.print(" Carry: " + getCarry());
+>>>>>>> parent of dc45d53... Screwing around with the disassembler
 		if(pageBoundaryFlag) {
 			pageBoundaryFlag = false;
 			cycles++;
@@ -102,9 +105,9 @@ public class CPU6502 extends Observable implements CPU {
 		SP &= 0xFF;
 	}
 
-	public void setController(Controller controller) {
-		mem.setController(controller);
-	}
+	//public void setController(Controller controller) {
+		//mem.setController(controller);
+	//}
 	
 	private void notifyObservers(int address, int data) {
 		for(Observer observer : observers) {
@@ -112,13 +115,6 @@ public class CPU6502 extends Observable implements CPU {
 		}
 	}
 	
-	public PPU getPPU() {
-		return mem.ppu;
-	}
-	
-	public void setState(int state) {
-		this.state = state;
-	}
 	
 	public int read(int address) {
 		return mem.read(address);
@@ -286,57 +282,44 @@ public class CPU6502 extends Observable implements CPU {
 			new CPX(this, new Immediate(),"CPX"), new SBC(this, new IndirectX(),"SBC"), new NOP(this, new Immediate(),"NOP"), new ISC(this, new IndirectX(),"ISC"), new CPX(this, new ZeroPage(),"CPX"), new SBC(this, new ZeroPage(),"SBC"), new INC(this, new ZeroPage(),"INC"), new ISC(this, new ZeroPage(),"ISC"), new INX(this, new Implied(),"INX"), new SBC(this, new Immediate(),"SBC"), new NOP(this, new Implied(),"NOP"), new SBC(this, new Immediate(),"SBC"), new CPX(this, new Absolute(),"CPX"), new SBC(this, new Absolute(),"SBC"), new INC(this, new Absolute(),"INC"), new ISC(this, new Absolute(),"ISC"), 
 			new BEQ(this, new Relative(),"BEQ"), new SBC(this, new IndirectY(),"SBC"), new KIL(this, new Implied(),"KIL"), new ISC(this, new IndirectY(),"ISC"), new NOP(this, new ZeroPageX(),"NOP"), new SBC(this, new ZeroPageX(),"SBC"), new INC(this, new ZeroPageX(),"INC"), new ISC(this, new ZeroPageX(),"ISC"), new SED(this, new Implied(),"SED"), new SBC(this, new AbsoluteY(),"SBC"), new NOP(this, new Implied(),"NOP"), new ISC(this, new AbsoluteY(),"ISC"), new NOP(this, new AbsoluteX(),"NOP"), new SBC(this, new AbsoluteX(),"SBC"), new INC(this, new AbsoluteX(),"INC"), new ISC(this, new AbsoluteX(),"ISC") 						
 		};
-		
+			
 		opCodeLengths = new int[] {
-				0, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				3, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				1, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				1, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,  
-				2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
-				2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
-				2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3  
-			};
-				
-			opCodeCycles = new int[] {
-				0, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,  
-				3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
-				6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,  
-				2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
-				6, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,  
-				3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
-				6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,  
-				2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
-				2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,  
-				3, 6, 0, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,  
-				2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,  
-				2, 5, 0, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,  
-				2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,  
-				3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
-				2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,  
-				2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7 
-			};
-
+			0, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			3, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			1, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			1, 2, 0, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,  
+			2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,  
+			2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 3, 3, 3, 3,  
+			2, 2, 0, 2, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3  
+		};
+			
+		opCodeCycles = new int[] {
+			0, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,  
+			3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
+			6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,  
+			2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
+			6, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,  
+			3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
+			6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,  
+			2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
+			2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,  
+			3, 6, 0, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,  
+			2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,  
+			2, 5, 0, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,  
+			2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,  
+			3, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,  
+			2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,  
+			2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7 
+		};
 	}
 
-	public MemoryManager getMem() {
-		return mem;
-	}
-
-	
-	public void NMI() {
-		PC -= 1;
-		stackPush((PC >> 8) & 0xFF);
-		stackPush(PC & 0xFF);
-        stackPush(getStatusRegister());
-        PC = mem.read(0xFFFA) + (mem.read(0xFFFB) << 8);
-	}
 }
