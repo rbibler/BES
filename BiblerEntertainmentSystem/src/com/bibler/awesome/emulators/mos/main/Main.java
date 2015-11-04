@@ -10,6 +10,8 @@ public class Main {
 		setupShutdown(frame);
 	}
 	
+	
+	
 	private static void setupShutdown(MainFrame frame) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override

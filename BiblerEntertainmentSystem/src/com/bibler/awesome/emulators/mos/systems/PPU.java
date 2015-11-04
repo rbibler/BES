@@ -1,7 +1,6 @@
 package com.bibler.awesome.emulators.mos.systems;
 
 import com.bibler.awesome.emulators.mos.ui.MainFrame;
-import com.bibler.awesome.emulators.mos.utils.Logger;
 
 public class PPU {
 	
@@ -41,7 +40,6 @@ public class PPU {
 	private MainFrame mainFrame;
 	private long startTime;
 	private StringBuilder builder = new StringBuilder();
-	private Logger logger = new Logger();
 	private boolean firstWrite = true;
 	
 	public PPU() {
@@ -587,16 +585,7 @@ public class PPU {
 				grabBit(bitmapShiftOne, xScroll));
 		int value = (curAttr << 2) | pixel;
 		bitmap[offset] = manager.read(0x3F00 + value);
-		logPixel(pixel, value);
 		shift();
-	}
-	
-	private void logPixel(int pixel, int value) {
-		logger.log("(" + (cycles - 1) + "," + scanline + ")", false);
-		logger.log(" | P: " + pixel, false);
-		logger.log(" | Pal: " + (value >> 2), false);
-		logger.log(" | NT: " + curNT, false);
-		logger.log(" | AT: " + curAttr, true);
 	}
 	
 	private int grabBit(int byteFromWhichToGrab, int bitToGrab) {
@@ -614,10 +603,6 @@ public class PPU {
 
 	public int getBGPt() {
 		return bgPT;
-	}
-
-	public Logger getLogger() {
-		return logger;
 	}
 
 	public int getCycles() {

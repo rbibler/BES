@@ -53,6 +53,11 @@ public class Emulator extends Observable implements Runnable {
 		return cpu;
 	}
 	
+	public void pauseEmulation() {
+		pause();
+		notifyObservers();
+	}
+	
 	public void pause() {
 		synchronized(pauseLock) {
 			pause = true;

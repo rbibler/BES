@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -108,7 +109,26 @@ public class DisassemblyPanel extends JScrollPane {
 		int length;
 		int arg1 = 0;
 		int arg2 = 0;
-		for(int i = 0x8000; i < 0xFFFF; i += length) {
+		for(int i = cpu.getPC(); i < 0xFFFF; i += length) {
+			pc2Line.put(i, lineCount++);
+			opCode = (cpu.read(i));
+			builder.append(StringUtils.formatNumber(i, 4));
+			builder.append("    ");
+			length = OpcodeTables.length[opCode];
+			//length = length > 0 ? length : 1;
+			if(length == 2) {
+				arg1 = cpu.read(i + 1);
+			} else if(length == 3) {
+				arg1 = cpu.read(i + 1);
+				arg2 = cpu.read(i + 2);
+			}
+			String s = String.format(OpcodeTables.formattedOpCodes[opCode], arg1, arg2);
+			builder.append(s);
+			builder.append("\n");
+			arg1 = 0;
+			arg2 = 0;
+		}
+		for(int i = 0x8000; i < cpu.getPC(); i += length) {
 			pc2Line.put(i, lineCount++);
 			opCode = (cpu.read(i));
 			builder.append(StringUtils.formatNumber(i, 4));
@@ -152,7 +172,11 @@ public class DisassemblyPanel extends JScrollPane {
 	}
 	
 	private Point getStartEnd(int line) {
+		try {
 		line = pc2Line.get(line);
+		} catch(Exception e) {
+			System.out.println("Line caused foul: " + line);
+		}
 		int start = -1;
 		int end = -1;
 		try {

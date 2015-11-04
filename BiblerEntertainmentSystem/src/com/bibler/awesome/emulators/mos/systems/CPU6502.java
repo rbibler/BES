@@ -86,8 +86,6 @@ public class CPU6502 extends Observable implements CPU {
 		opCode &= 0xFF;
 		int cycles = opCodeCycles[opCode];
 		opCodeInstructions[opCode].execute();
-		opCodeInstructions[opCode].printMnemonic();
-		//System.out.print(" Carry: " + getCarry());
 		if(pageBoundaryFlag) {
 			pageBoundaryFlag = false;
 			cycles++;

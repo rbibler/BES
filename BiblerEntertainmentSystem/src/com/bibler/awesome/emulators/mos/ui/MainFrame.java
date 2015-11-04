@@ -192,6 +192,10 @@ public class MainFrame extends JFrame implements Observer {
 		nesPanel.toggleAttrGrid();
 	}
 	
+	public void pause() {
+		emulator.pauseEmulation();
+	}
+	
 	public void setupMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -210,6 +214,7 @@ public class MainFrame extends JFrame implements Observer {
 		JMenuItem nextFrame = new JMenuItem("Next Frame");
 		JMenuItem showGrid = new JMenuItem("Show Grid");
 		JMenuItem showAttrGrid = new JMenuItem("Show Attribute Grid");
+		JMenuItem pause = new JMenuItem("Pause");
 		MenuListener listener = new MenuListener(this);
 		open.setActionCommand("OPEN");
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
@@ -254,8 +259,13 @@ public class MainFrame extends JFrame implements Observer {
 		showAttrGrid.addActionListener(listener);
 		showAttrGrid.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK));
 		
+		pause.setActionCommand("PAUSE");
+		pause.addActionListener(listener);
+		pause.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
+		
 		file.add(open);
 		runMenu.add(runItem);
+		runMenu.add(pause);
 		runMenu.add(debugItem);
 		runMenu.add(stepInto);
 		runMenu.add(stepOut);
@@ -330,9 +340,7 @@ public class MainFrame extends JFrame implements Observer {
 	}
 
 	public void shutdown() {
-		try {
-			emulator.getCPU().getPPU().getLogger().close();
-		} catch(NullPointerException e) {}
+		
 	}
 
 	@Override

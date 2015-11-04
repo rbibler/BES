@@ -57,6 +57,10 @@ public class MenuListener implements ActionListener {
 			break;
 		case "SHOW_ATTR_GRID":
 			frame.showAttr();
+			break;
+		case "PAUSE":
+			frame.pause();
+			break;
 		}
 		
 		
