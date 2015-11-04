@@ -1,23 +1,25 @@
 package com.bibler.awesome.emulators.mos.systems;
 
+import java.awt.Point;
+
 public class PPUMemoryManager {
 	
-	Memory patternTable0;
-	Memory patternTable1;
-	Memory nameTable0;
-	Memory attributeTable0;
-	Memory nameTable1;
-	Memory attributeTable1;
-	Memory nameTable2;
-	Memory attributeTable2;
-	Memory nameTable3;
-	Memory attributeTable3;
-	Memory bgPalette;
-	Memory spritePalette;
-	Memory OAM;
-	//public MemoryFrame frame;
+	private Memory patternTable0;
+	private Memory patternTable1;
+	private Memory nameTable0;
+	private Memory attributeTable0;
+	private Memory nameTable1;
+	private Memory attributeTable1;
+	private Memory nameTable2;
+	private Memory attributeTable2;
+	private Memory nameTable3;
+	private Memory attributeTable3;
+	private Memory bgPalette;
+	private Memory spritePalette;
+	private Memory OAM;
 	private boolean horiz;
 	private boolean vert;
+	private Point lastChanged = new Point(0, 0);
 	
 	private int totalSize;
 	
@@ -109,9 +111,12 @@ public class PPUMemoryManager {
 		} else if(address >= 0x4000) {
 			OAM.write(address - 0x4000, data);
 		}
-		//if(frame != null) {
-		//frame.updateTable(address, data, true);
-		//}
+		updateLastChanged(address, data);
+	}
+	
+	private void updateLastChanged(int address, int data) {
+		lastChanged.x = address;
+		lastChanged.y = data;
 	}
 	
 	int[] readNextSprite(int index) {
@@ -158,6 +163,9 @@ public class PPUMemoryManager {
 		}
 		return ret;
 	}
-	
 
+	public Point getLastChanged() {
+		return lastChanged;
+	}
+	
 }

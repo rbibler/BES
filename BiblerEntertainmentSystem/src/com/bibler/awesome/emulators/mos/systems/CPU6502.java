@@ -1,5 +1,9 @@
 package com.bibler.awesome.emulators.mos.systems;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -21,6 +25,7 @@ import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageX;
 import com.bibler.awesome.emulators.mos.systems.addressingmode.ZeroPageY;
 import com.bibler.awesome.emulators.mos.systems.instructions.*;
 import com.bibler.awesome.emulators.mos.utils.OpcodeTables;
+import com.bibler.awesome.emulators.mos.utils.StringUtils;
 
 public class CPU6502 extends Observable implements CPU {
 	
@@ -46,6 +51,7 @@ public class CPU6502 extends Observable implements CPU {
 	private ArrayList<Observer> observers = new ArrayList<Observer>();
 	
 	public final static int ACCUMULATOR = -13;
+	private BufferedWriter writer;
 	
 	private CPU6502(PPU ppu) {
 		mem = new MemoryManager();
@@ -53,6 +59,13 @@ public class CPU6502 extends Observable implements CPU {
 		mem.ppu = ppu;
 		this.ppu = ppu;
 		setupArrays();
+		setupWriter();
+	}
+	
+	private void setupWriter() {
+		try {
+			writer = new BufferedWriter(new FileWriter(new File("C:/users/ryan/desktop/log1.txt")));
+		} catch(IOException e) {}
 	}
 	
 	public static CPU6502 getInstance(PPU ppu) {
@@ -86,6 +99,10 @@ public class CPU6502 extends Observable implements CPU {
 		opCode &= 0xFF;
 		int cycles = opCodeCycles[opCode];
 		opCodeInstructions[opCode].execute();
+		try {
+			writer.write(StringUtils.formatNumber(getPC() - 1,  4) + "  " + opCodeInstructions[opCode].getMnemonic() + "\n");
+			writer.flush();
+		} catch(IOException e) {};
 		if(pageBoundaryFlag) {
 			pageBoundaryFlag = false;
 			cycles++;
@@ -127,6 +144,7 @@ public class CPU6502 extends Observable implements CPU {
 			setAccumulator(data);
 			return;
 		}
+		address &= 0xFFFF;
 		notifyObservers(address, data);
 		mem.write(address, data);
 	}
@@ -336,5 +354,6 @@ public class CPU6502 extends Observable implements CPU {
 		stackPush(PC & 0xFF);
         stackPush(getStatusRegister());
         PC = mem.read(0xFFFA) + (mem.read(0xFFFB) << 8);
+        System.out.println("NMI");
 	}
 }

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import com.bibler.awesome.emulators.mos.controllers.MemoryViewController;
 import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.ui.MemoryView;
 
@@ -45,8 +44,8 @@ public class AllSuiteATest extends TestCase {
 	
 	private void setupMemoryTable() {
 		MemoryView view = new MemoryView(0xFFFFFF);
-		MemoryViewController viewController = new MemoryViewController(view);
-		cpu.registerObserver(viewController);
+		//MemoryViewController viewController = new MemoryViewController(view);
+		//cpu.registerObserver(viewController);
 		
 	}
 	

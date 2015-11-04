@@ -44,6 +44,7 @@ public class MainFrame extends JFrame implements Observer {
 	private Controller controller = new Controller();
 	private PatternTableFrame ptFrame;
 	private NameTableFrame ntFrame;
+	private MemoryView memFrame;
 	
 	public MainFrame() {
 		super();
@@ -60,6 +61,7 @@ public class MainFrame extends JFrame implements Observer {
 		setupDisassemblyPanel();
 		setupPatternTableFrame();
 		setupNameTableFrame();
+		setupMemFrame();
 		add(mainPanel);
 		setupMenu();
 		pack();
@@ -100,6 +102,10 @@ public class MainFrame extends JFrame implements Observer {
 		ntFrame = new NameTableFrame();
 	}
 	
+	private void setupMemFrame() {
+		memFrame = new MemoryView(0xFFFF);
+	}
+	
 	private void setupDisassemblyPanel() {
 		disassemblyPanel = new DisassemblyPanel();
 		disassemblyPanel.setPreferredSize(new Dimension(256, 480));
@@ -135,8 +141,6 @@ public class MainFrame extends JFrame implements Observer {
 		disassemblyPanel.setEmulator(emulator);
 		emulator.getCPU().getPPU().setMainFrame(this);
 		disassemblyPanel.currentLine(emulator.getCPU().getPC());
-		//memFrame.setPPUManager(emulator.getPPU().getManager());
-		//memFrame.setCPUManager(cpu.mem);
 		cpu.setController(controller);
 		nesPanel.setController(controller);
 		nesPanel.requestFocus();
@@ -166,10 +170,6 @@ public class MainFrame extends JFrame implements Observer {
 	
 	public void showMemFrame() {
 		//memFrame.showTheFrame();
-	}
-	
-	public void switchMemTables() {
-		//memFrame.switchTables();
 	}
 	
 	public void showPatternTableFrame() {
@@ -348,7 +348,15 @@ public class MainFrame extends JFrame implements Observer {
 		if(!(o instanceof Emulator))
 			return;
 		final CPU6502 cpu = ((Emulator) o).getCPU();
-		statusPanel.updatePanel(cpu, ((Emulator) o).getCycles());
-		disassemblyPanel.currentLine(cpu.getPC());
+		String message = (String) arg;
+		switch(message) {
+		case "STATUS":
+			statusPanel.updatePanel(cpu, ((Emulator) o).getCycles());
+			disassemblyPanel.currentLine(cpu.getPC());
+			break;
+		case "MEM":
+			memFrame.update(cpu);
+			break;
+		}
 	}
 }

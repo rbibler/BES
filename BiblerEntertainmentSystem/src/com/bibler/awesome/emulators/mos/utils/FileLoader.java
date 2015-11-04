@@ -12,6 +12,7 @@ import java.util.zip.ZipFile;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import com.bibler.awesome.emulators.mos.systems.CPU6502;
 import com.bibler.awesome.emulators.mos.systems.Memory;
@@ -23,8 +24,12 @@ import com.bibler.awesome.emulators.mos.ui.MainFrame;
 public class FileLoader {
 	
 	static JFileChooser chooser = new JFileChooser();
+	static boolean chooserSetup;
 	
 	public static CPU6502 loadFile(File f, MainFrame frame) {
+		if(!chooserSetup) {
+			setupChooser();
+		}
 		if(f == null) {
 			f = getFile(frame);
 			if(f == null)
@@ -153,6 +158,25 @@ public class FileLoader {
 			return chooser.getSelectedFile();
 		}
 		return null;
+	}
+	
+	private static void setupChooser() {
+		FileFilter f = new FileFilter() {
+			public String getDescription() {
+				return "NES Rom (.NES)";
+			}
+			 
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+			    } else {
+			    	return f.getName().toLowerCase().endsWith(".nes");
+			    }
+			}
+		};
+		chooser.addChoosableFileFilter(f);
+		chooser.setAcceptAllFileFilterUsed(false);
+		chooserSetup = true;
 	}
 
 }

@@ -84,6 +84,7 @@ public class Emulator extends Observable implements Runnable {
 			cycles = 7;
 			NMINext = false;
 		}
+		notifyObservers("MEM");
 	}
 	
 	public void startEmulation() {
@@ -123,7 +124,7 @@ public class Emulator extends Observable implements Runnable {
 			pause();
 		}
 		nextCycle();
-		notifyObservers();
+		notifyObservers("STATUS");
 	}
 	
 	public void stepOutOf() {
@@ -152,14 +153,14 @@ public class Emulator extends Observable implements Runnable {
 	
 	public void frameAlert(long time) {
 		if(frameByFrame) {
-			notifyObservers();
+			notifyObservers("STATUS");
 			pause();
 		}
 	}
 	
-	public void notifyObservers() {
+	public void notifyObservers(String message) {
 		for(Observer observer : observers) {
-			observer.update(this, null);
+			observer.update(this, message);
 		}
 	}
 

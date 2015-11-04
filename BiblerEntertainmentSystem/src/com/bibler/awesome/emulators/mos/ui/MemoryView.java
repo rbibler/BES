@@ -1,9 +1,13 @@
 package com.bibler.awesome.emulators.mos.ui;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
+import com.bibler.awesome.emulators.mos.controllers.HexTableController;
+import com.bibler.awesome.emulators.mos.systems.CPU6502;
+import com.bibler.awesome.emulators.mos.systems.MemoryManager;
+import com.bibler.awesome.emulators.mos.systems.PPUMemoryManager;
 import com.bibler.awesome.ui.hextable.HexTable;
-import com.bibler.awesome.ui.hextable.HexTablePanel;
 
 public class MemoryView extends JFrame {
 	
@@ -11,29 +15,35 @@ public class MemoryView extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -7941655020467385772L;
-	HexTable table;
-	HexTablePanel tablePanel;
+	HexTableController cpuController;
+	HexTableController ppuController;
+	JTabbedPane pane;
 	
 	public MemoryView(int size) {
 		super();
 		initializeView();
-		initializeTable(size);
-	}
-	
-	private void initializeView() {
-		
-	}
-	
-	private void initializeTable(int size) {
-		table = new HexTable(size);
-		tablePanel = new HexTablePanel(table);
-		add(tablePanel);
+		initializeTables(size);
+		add(pane);
 		pack();
 		setVisible(true);
 	}
 	
-	public void update(int address, int data) {
-		table.updateCell(address, data);
+	private void initializeView() {
+		pane = new JTabbedPane();
+	}
+	
+	private void initializeTables(int size) {
+		cpuController = new HexTableController();
+		pane.add("CPU Memory", cpuController.setTable(new HexTable(size)));
+		ppuController = new HexTableController();
+		pane.add("PPU Memory", ppuController.setTable(new HexTable(size)));
+	}
+	
+	public void update(CPU6502 cpu) {
+		final MemoryManager mem = cpu.getMem();
+		final PPUMemoryManager ppuMem = cpu.getPPU().getManager();
+		cpuController.updateCell(mem.getLastChanged());
+		ppuController.updateCell(ppuMem.getLastChanged());
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.bibler.awesome.emulators.mos.systems;
 
-import java.util.Arrays;
+import java.awt.Point;
 
 public class MemoryManager {
 
@@ -11,7 +11,7 @@ public class MemoryManager {
 	Memory sRam;
 	Memory prgRom;
 	Controller controller;
-	//MemoryFrame frame;
+	Point lastChanged = new Point(0,0);
 	
 	PPU ppu;
 	
@@ -21,10 +21,6 @@ public class MemoryManager {
 	public MemoryManager() {
 		initializeMemoryBanks();
 	}
-	
-	//public void setMemoryFrame(MemoryFrame frame) {
-		//this.frame = frame;
-	//}
 	
 	public void setController(Controller controller) {
 		this.controller = controller;
@@ -47,9 +43,11 @@ public class MemoryManager {
 	
 	public void write(int address, int data) {
 		if(address < 0x2000) {
-			cpuRam.write(address % 0x800, data);
+			address %= 0x800;
+			cpuRam.write(address, data);
 		} else if(address < 0x4000) {
-			ppu.write(address % 8, data);
+			address %= 8;
+			ppu.write(address, data);
 		} else if(address < 0x4020) {
 			if(address == 0x4014) {
 				executeDAM(data);
@@ -65,9 +63,12 @@ public class MemoryManager {
 		} else if(address < 0x10000) {
 			prgRom.write(address - 0x8000, data);
 		}
-		//if(frame != null && address > 0) {
-			//frame.updateTable(address, data, false);
-		//}
+		updateLastChanged(address, data);
+	}
+	
+	private void updateLastChanged(int address, int data) {
+		lastChanged.x = address;
+		lastChanged.y = data;
 	}
 	
 	public void executeDAM(int address) {
@@ -117,5 +118,9 @@ public class MemoryManager {
 			ret[i] = this.read(0x8000 + i);
 		}
 		return ret;
+	}
+
+	public Point getLastChanged() {
+		return lastChanged;
 	}
 }

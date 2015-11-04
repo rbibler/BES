@@ -19,7 +19,7 @@ public class NOPTest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(2, cycles);
-		assertEquals(0x8002, cpu.getPC());
+		assertEquals(0x8001, cpu.getPC());
 	}
 
 }

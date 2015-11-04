@@ -18,7 +18,11 @@ public abstract class Instruction {
 	public abstract void execute();
 	
 	public void printMnemonic() {
-		System.out.print(mnemonic);
+		System.out.println(mnemonic);
+	}
+	
+	public String getMnemonic() {
+		return mnemonic;
 	}
 
 }

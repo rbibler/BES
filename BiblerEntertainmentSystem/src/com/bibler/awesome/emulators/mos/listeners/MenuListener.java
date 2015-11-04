@@ -40,9 +40,6 @@ public class MenuListener implements ActionListener {
 		case "SHOW_MEM":
 			frame.showMemFrame();
 			break;
-		case "SWITCH_MEM":
-			frame.switchMemTables();
-			break;
 		case "SHOW_PT":
 			frame.showPatternTableFrame();
 			break;
