@@ -349,9 +349,9 @@ public class CPU6502 extends Observable implements CPU {
 
 	
 	public void NMI() {
-		PC -= 1;
-		stackPush((PC >> 8) & 0xFF);
-		stackPush(PC & 0xFF);
+		final int newPC = PC - 1;
+		stackPush((newPC >> 8) & 0xFF);
+		stackPush(newPC & 0xFF);
         stackPush(getStatusRegister());
         PC = mem.read(0xFFFA) + (mem.read(0xFFFB) << 8);
         System.out.println("NMI");

@@ -15,7 +15,6 @@ public class RTI extends Instruction {
     	final int PCLow = cpu.stackPop();
     	final int PCHigh = cpu.stackPop();
     	cpu.setStatusRegister(sR);
-    	cpu.setPC(PCHigh << 8 | PCLow);
-        
+    	cpu.setPC((PCHigh << 8 | PCLow) + 1);
     } 
 }
