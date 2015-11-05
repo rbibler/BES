@@ -12,7 +12,7 @@ public class ASL extends Instruction {
 
     @Override 
     public void execute() { 
-    	int operand = mode.read(cpu);
+    	int operand = mode.read(cpu, true);
     	int carry = operand >> 7 & 1;
     	operand = operand << 1;
     	operand %= 256;

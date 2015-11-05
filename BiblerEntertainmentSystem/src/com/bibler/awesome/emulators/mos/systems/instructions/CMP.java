@@ -11,7 +11,7 @@ public class CMP extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	final int accumulator = cpu.getAccumulator();
     	int value = (accumulator - operand);
     	cpu.updateCarry(~(value >> 8 & 1));

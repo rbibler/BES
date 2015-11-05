@@ -11,7 +11,7 @@ public class ROR extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	final int carry = cpu.getCarry();
     	cpu.updateCarry(operand & 1);
     	final int value = ((operand >> 1) | (carry << 7)) % 256;

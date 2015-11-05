@@ -11,7 +11,7 @@ public class LSR extends Instruction {
 
     @Override 
     public void execute() { 
-    	int operand = mode.read(cpu);
+    	int operand = mode.read(cpu, true);
     	int value = (operand >> 1) % 256;
     	cpu.updateCarry(operand & 1);
     	cpu.updateSign(value >> 7 & 1);

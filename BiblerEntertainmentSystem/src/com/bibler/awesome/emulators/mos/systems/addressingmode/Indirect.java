@@ -5,7 +5,7 @@ import com.bibler.awesome.emulators.mos.systems.CPU6502;
 public class Indirect implements AddressingMode {
 	
 	@Override
-	public int read(CPU6502 cpu) {
+	public int read(CPU6502 cpu, boolean read) {
 		final int PC = cpu.getPC();
 		cpu.incrementPC();
 		final int PCPlusOne = cpu.getPC();
@@ -15,7 +15,10 @@ public class Indirect implements AddressingMode {
 		int addHigh = ((address + 1) & 0xFF) + (address & 0xFF00);
 		addHigh = cpu.read(addHigh);
 		cpu.setAddress(addLow | (addHigh << 8));
-		return cpu.read(address);
+		if(read) {
+			return cpu.read(address);
+		} else
+			return 0;
 	}
 
 }

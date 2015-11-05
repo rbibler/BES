@@ -11,7 +11,7 @@ public class BCC extends Instruction {
 
     @Override 
     public void execute() { 
-    	int operand = mode.read(cpu);
+    	int operand = mode.read(cpu, true);
     	if(cpu.getCarry() == 0) {
     		cpu.setPC(operand);
     	}

@@ -11,7 +11,7 @@ public class STA extends Instruction {
 
     @Override 
     public void execute() { 
-    	mode.read(cpu);
+    	mode.read(cpu, false);
     	final int accumulator = cpu.getAccumulator();
     	cpu.write(cpu.getAddress(), accumulator);
         

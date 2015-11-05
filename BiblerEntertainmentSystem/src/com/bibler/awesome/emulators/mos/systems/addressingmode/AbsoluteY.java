@@ -5,7 +5,7 @@ import com.bibler.awesome.emulators.mos.systems.CPU6502;
 public class AbsoluteY implements AddressingMode {
 	
 	@Override
-	public int read(CPU6502 cpu) {
+	public int read(CPU6502 cpu, boolean read) {
 		final int PC = cpu.getPC();
 		cpu.incrementPC();
 		final int PCPlusOne = cpu.getPC();
@@ -16,7 +16,10 @@ public class AbsoluteY implements AddressingMode {
 			cpu.setPageBoundaryFlag();
 		}
 		cpu.setAddress(effectiveAdd);
-		return cpu.read(effectiveAdd);
+		if(read) {
+			return cpu.read(effectiveAdd);
+		} else
+			return 0;
 	}
 
 }

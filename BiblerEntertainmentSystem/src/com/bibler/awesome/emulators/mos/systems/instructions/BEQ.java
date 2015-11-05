@@ -11,7 +11,7 @@ public class BEQ extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	if(cpu.getZero() == 1) {
     		cpu.setPC(operand);
     	}

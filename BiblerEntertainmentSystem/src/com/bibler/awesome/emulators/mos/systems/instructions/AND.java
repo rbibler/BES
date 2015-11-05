@@ -12,7 +12,7 @@ public class AND extends Instruction {
     @Override 
     public void execute() { 
     	final int accumulator = cpu.getAccumulator();
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	final int value = (accumulator & operand);
     	cpu.setAccumulator(value);
     	cpu.updateSign((value >> 7) & 1);

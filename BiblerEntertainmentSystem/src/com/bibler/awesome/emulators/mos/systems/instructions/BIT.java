@@ -11,7 +11,7 @@ public class BIT extends Instruction {
 
     @Override 
     public void execute() { 
-    	int operand = mode.read(cpu);
+    	int operand = mode.read(cpu, true);
     	int accumulator = cpu.getAccumulator();
     	int value = (operand & accumulator) % 256;
     	cpu.updateZero(value == 0 ? 1 : 0);

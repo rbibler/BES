@@ -11,7 +11,7 @@ public class ADC extends Instruction {
 
 	@Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	int carry = cpu.getCarry();
     	final int accumulator = cpu.getAccumulator();
     	int value = accumulator + carry + operand;

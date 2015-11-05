@@ -354,6 +354,5 @@ public class CPU6502 extends Observable implements CPU {
 		stackPush(newPC & 0xFF);
         stackPush(getStatusRegister());
         PC = mem.read(0xFFFA) + (mem.read(0xFFFB) << 8);
-        System.out.println("NMI");
 	}
 }

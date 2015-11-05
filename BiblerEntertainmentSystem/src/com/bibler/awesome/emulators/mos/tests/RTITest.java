@@ -24,7 +24,7 @@ public class RTITest extends TestCase {
 		final int opCode = cpu.fetch();
 		final int cycles = cpu.execute(opCode);
 		assertEquals(0x44, cpu.getStatusRegister());
-		assertEquals(0x4400, cpu.getPC());
+		assertEquals(0x4401, cpu.getPC());
 	}
 
 }

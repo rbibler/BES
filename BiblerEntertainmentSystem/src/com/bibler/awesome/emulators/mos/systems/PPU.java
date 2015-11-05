@@ -81,7 +81,7 @@ public class PPU {
 					retValue = manager.read(vAddress);
 					lastValue = manager.read(vAddress - 0x1000);
 				}
-				vAddress += vramInc;
+				updateVAddress(vramInc);
 				break;
 			default:
 				return retValue;
@@ -142,7 +142,7 @@ public class PPU {
 			break;
 		case 7:
 			manager.write(vAddress, data);
-			vAddress += vramInc;
+			updateVAddress(vramInc);
 			break;
 		}
 		
@@ -558,7 +558,7 @@ public class PPU {
 			vAddress &= ~0x001F;
 			vAddress ^= 0x0400;
 		} else {
-			vAddress += 1;
+			updateVAddress(1);
 		}
 	}
 	
@@ -611,6 +611,10 @@ public class PPU {
 	
 	public int getScanline() {
 		return scanline;
+	}
+	
+	private void updateVAddress(int update) {
+		vAddress += update;
 	}
 
 }

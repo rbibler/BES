@@ -11,7 +11,7 @@ public class LDA extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	final int operand = mode.read(cpu, true);
     	cpu.setAccumulator(operand);
     	cpu.updateZero(operand == 0 ? 1 : 0);
     	cpu.updateSign(operand >> 7 & 1);

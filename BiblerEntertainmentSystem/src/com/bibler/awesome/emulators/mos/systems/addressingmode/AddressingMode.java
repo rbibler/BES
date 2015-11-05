@@ -4,6 +4,6 @@ import com.bibler.awesome.emulators.mos.systems.CPU6502;
 
 public abstract interface AddressingMode {
 
-	public abstract int read(CPU6502 cpu);
+	public abstract int read(CPU6502 cpu, boolean read);
 
 }

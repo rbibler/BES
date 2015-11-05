@@ -11,7 +11,7 @@ public class INC extends Instruction {
 
     @Override 
     public void execute() { 
-        final int operand = mode.read(cpu);
+        final int operand = mode.read(cpu, true);
         final int value = (operand + 1) % 256;
         cpu.write(cpu.getAddress(), value);
         cpu.updateZero(value == 0 ? 1 : 0);

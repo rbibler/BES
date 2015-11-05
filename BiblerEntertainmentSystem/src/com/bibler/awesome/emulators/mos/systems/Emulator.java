@@ -159,6 +159,8 @@ public class Emulator extends Observable implements Runnable {
 	}
 	
 	public void notifyObservers(String message) {
+		if(1==1)
+			return;
 		for(Observer observer : observers) {
 			observer.update(this, message);
 		}

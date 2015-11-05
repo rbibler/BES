@@ -11,7 +11,7 @@ public class BVS extends Instruction {
 
     @Override 
     public void execute() { 
-    	int operand = mode.read(cpu);
+    	int operand = mode.read(cpu, true);
     	if(cpu.getOverflow() == 1) {
     		cpu.setPC(operand);
     	}

@@ -11,7 +11,7 @@ public class JSR extends Instruction {
 
     @Override 
     public void execute() { 
-    	final int operand = mode.read(cpu);
+    	mode.read(cpu, false);
     	final int PC = (cpu.getPC() - 1);
     	cpu.stackPush(PC >> 8 & 0xFF);
     	cpu.stackPush(PC & 0xFF);
