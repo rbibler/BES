@@ -92,7 +92,7 @@ public class Emulator extends Observable implements Runnable {
 		running = true;
 		cpu.setState(1);
 		state = RUN;
-		ppu.setStartTime();
+		//ppu.setStartTime();
 		pause();
 		t.start();
 		resume();
@@ -162,6 +162,10 @@ public class Emulator extends Observable implements Runnable {
 		for(Observer observer : observers) {
 			observer.update(this, message);
 		}
+	}
+	
+	public void notifyScanline(int scanline) {
+		
 	}
 
 	@Override

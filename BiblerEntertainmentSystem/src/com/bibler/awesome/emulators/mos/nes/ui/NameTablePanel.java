@@ -46,7 +46,7 @@ public class NameTablePanel extends JPanel {
 		int curNT;
 		int curAttr;
 		int length = 256 * 240;
-		int bgPT = ppu.getBGPt();
+		int bgPT = 1;//ppu.getBGPt();
 		for(int i = 0; i < length; i++) {
 			x = i % 256;
 			y = (i / 256);
