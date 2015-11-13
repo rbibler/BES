@@ -36,6 +36,14 @@ public class PPU {
 	private int bgPatternTable;
 	private int spriteSize;
 	private int ppuMasterSlave;
+	private int vBuffer;
+	private int OAMAddr;
+	private int lastWrite;
+	private int ppuStatus;
+	
+	private int scanline;
+	private int preRenderScanline = 261;
+	
 	private boolean NMIOn;
 	private boolean grayscale;
 	private boolean bgCrop;
@@ -45,26 +53,50 @@ public class PPU {
 	private boolean emphasizeRed;
 	private boolean emphasizeGreen;
 	private boolean emphasizeBlue;
-	public void read(int register) {
+	
+	public final static int SPRITE_OVERFLOW = 5;
+	public final static int SPRITE_0_HIT = 6;
+	public final static int V_BLANK = 7;
+	
+	public int read(int register) {
+		int retValue = 0;
 		switch(register) {
-		case 2:
+		case 2:	//PPUSTATUS
 			w = 0;
+			ppuStatus = (ppuStatus & ~(0b11111)) | lastWrite & 0b11111;
+			retValue = ppuStatus;
+			ppuStatus &= ~(1 << V_BLANK);
 			break;
-		case 7:
+		case 4: // OAMDATA
+			return manager.read(OAMAddr);
+		case 7:	//PPUDATA
+			if(v < 0x3F00) {
+				retValue = vBuffer;
+				vBuffer = manager.read(v);
+			} else {
+				retValue = manager.read(v);
+				vBuffer = manager.read(v - 0x1000);
+			}
+			
 			if(!renderingEnabled()) {
-			incrementVram(vramInc);
+				incrementVram(vramInc);
 			} else {
 				coarseX();
 				yIncrement();
-			}
+				}
 			break;
+			default:
+				retValue = vBuffer;
 		}
+		return retValue;
 	}
 	
 	
 	public void write(int register, int d) {
+		d &= 0xFF;
+		lastWrite = d;
 		switch(register) {
-		case 0:
+		case 0:	//PPUCTRL
 			t &= ~(0b11 << 10);
 			t = (d & 0x03) << 10;
 			vramInc = (d >> 2 & 1) == 0 ? 1 : 32;
@@ -75,7 +107,7 @@ public class PPU {
 			NMIOn = (d >> 7 & 1) == 0 ? false : true;
 			break;
 			
-		case 1:
+		case 1:	//PPUMASK
 			grayscale = (d & 1) == 0 ? false : true;
 			bgCrop = (d >> 1 & 1) == 0 ? true : false;
 			spriteCrop = (d >> 2 & 1) == 0 ? true : false;
@@ -84,7 +116,19 @@ public class PPU {
 			emphasizeRed = (d >> 5 & 1) == 0 ? false : true;
 			emphasizeGreen = (d >> 6 & 1) == 0 ? false : true;
 			emphasizeBlue = (d >> 7 & 1) == 0 ? false : true;
-		case 5:
+			break;
+		case 3:
+			OAMAddr = d;
+			break;
+			
+		case 4:
+			if(renderingEnabled() && currentlyRendering()) {
+				return;
+			} else {
+				manager.write(OAMAddr + 0x4000, d);
+				OAMAddr++;
+			}
+		case 5:	//PPUSCROLL
 			if(w == 0) {
 				t &= ~(0b11111);
 				t |= (d >> 3) & 0b11111;
@@ -98,7 +142,7 @@ public class PPU {
 				w = 0;
 			}
 			break;
-		case 6:
+		case 6:	//PPUADDR
 			if(w == 0) {
 				t &= ~(0b1111100000000);
 				t |= (d & 0b111111) << 8;
@@ -110,6 +154,10 @@ public class PPU {
 				v = t;
 				w = 0;
 			}
+			break;
+		case 7:	//PPUDATA
+			manager.write(v, d);
+			incrementVram(vramInc);
 		}
 	}
 	
@@ -118,7 +166,11 @@ public class PPU {
 	}
 	
 	private boolean renderingEnabled() {
-		return false;
+		return showBG || showSprites;
+	}
+	
+	private boolean currentlyRendering() {
+		return scanline == preRenderScanline || scanline < 240;
 	}
 	
 	private void coarseX() {
@@ -145,6 +197,14 @@ public class PPU {
 				y += 1;
 			}
 			v = (v & ~0x03E0) | ( y << 5);
+		}
+	}
+	
+	public void updatePPUStatus(boolean status, int flag) {
+		if(status) {
+			ppuStatus |= 1 << flag;
+		} else {
+			ppuStatus &= ~(1 << flag);
 		}
 	}
 	
@@ -178,6 +238,10 @@ public class PPU {
 	
 	public int getPPUMasterSlave() {
 		return ppuMasterSlave;
+	}
+	
+	public int getOAMAddr() {
+		return OAMAddr;
 	}
 	
 	public boolean getNMI() {
@@ -214,5 +278,9 @@ public class PPU {
 	
 	public boolean emphasizeBlue() {
 		return emphasizeBlue;
+	}
+	
+	public PPUMemoryManager getManager() {
+		return manager;
 	}
 }

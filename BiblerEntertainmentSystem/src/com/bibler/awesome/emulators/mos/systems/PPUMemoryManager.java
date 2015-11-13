@@ -152,6 +152,8 @@ public class PPUMemoryManager {
 			return bgPalette.read(address - 0x3F00);
 		} else if(address >= 0x3F10 && address < 0x3F20) {
 			return spritePalette.read(address - 0x3F10);
+		} else if(address >= 0x4000) {
+			return OAM.read(address - 0x4000);
 		}
 		return -1;
 	}
