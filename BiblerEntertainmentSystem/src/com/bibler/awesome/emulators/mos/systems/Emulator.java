@@ -83,6 +83,7 @@ public class Emulator extends Observable implements Runnable {
 			cpu.NMI();
 			cycles = 7;
 			NMINext = false;
+			System.out.println("NMI");
 		}
 		notifyObservers("MEM");
 	}

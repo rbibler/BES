@@ -1,17 +1,8 @@
-/*
- * HalfNES by Andrew Hoffman
- * Licensed under the GNU GPL Version 3. See LICENSE file
- */
+
 package com.bibler.awesome.emulators.mos.systems;
 
 
-import java.awt.image.BufferedImage;
-import static java.awt.image.BufferedImage.TYPE_INT_BGR;
-import java.util.Arrays;
-
 import com.bibler.awesome.emulators.mos.ui.MainFrame;
-
-import static java.util.Arrays.fill;
 
 public class PPU {
 
@@ -41,8 +32,22 @@ public class PPU {
 	private int lastWrite;
 	private int ppuStatus;
 	
+	private int bgShiftOne;
+	private int bgShiftTwo;
+	private int attrShiftOne;
+	private int attrShiftTwo;
+	private int ntLatch;
+	private int attrLatchOne;
+	private int attrLatchTwo;
+	private int tileLowLatch;
+	private int tileHighLatch;
+	
 	private int scanline;
 	private int preRenderScanline = 261;
+	private int scanlinesPerFrame = 262;
+	private int frameCount;
+	private int cycle;
+	private int renderToggle;
 	
 	private boolean NMIOn;
 	private boolean grayscale;
@@ -53,10 +58,18 @@ public class PPU {
 	private boolean emphasizeRed;
 	private boolean emphasizeGreen;
 	private boolean emphasizeBlue;
+
 	
 	public final static int SPRITE_OVERFLOW = 5;
 	public final static int SPRITE_0_HIT = 6;
 	public final static int V_BLANK = 7;
+	
+	private int[] bitmap = new int[256*240];
+	
+	
+	public void setEmulator(Emulator emulator) {
+		this.emulator = emulator;
+	}
 	
 	public int read(int register) {
 		int retValue = 0;
@@ -68,7 +81,7 @@ public class PPU {
 			ppuStatus &= ~(1 << V_BLANK);
 			break;
 		case 4: // OAMDATA
-			return manager.read(OAMAddr);
+			return manager.read(OAMAddr + 0x4000);
 		case 7:	//PPUDATA
 			if(v < 0x3F00) {
 				retValue = vBuffer;
@@ -161,6 +174,33 @@ public class PPU {
 		}
 	}
 	
+	public void step() {
+		if(scanline <= 239 && renderingEnabled()) {
+			executeReads();
+		} else if(scanline == 241) {
+			if(cycle == 1) {
+				updatePPUStatus(true, V_BLANK);
+			}
+		} else if(scanline == 261 && renderingEnabled()) {
+			executeReads();
+			if(cycle == 1) {
+				updatePPUStatus(false, V_BLANK);
+				updatePPUStatus(false, SPRITE_0_HIT);
+				updatePPUStatus(false, SPRITE_OVERFLOW);
+			}
+			if(cycle >= 280 && cycle <= 304) {
+				equalizeTAndVVert();
+			}
+		}
+		if(renderingEnabled() && scanline < 240 && cycle > 0 && cycle < 257) {
+			renderPixel();
+		}
+		cycle++;
+		checkForNMI();
+		checkForFrameEnd();
+		
+	}
+	
 	private void incrementVram(int inc) {
 		v += inc;
 	}
@@ -200,12 +240,136 @@ public class PPU {
 		}
 	}
 	
+	private void equalizeTAndVVert() {
+		v = (v & 0x841F) | (t & 0x7BE0);
+	}
+	
+	private void equalizeTAndVHoriz() {
+		//v &= ~0x41F;
+        //v |= t & 0x41F;
+		v = (v & 0xFBE0) | (t & 0x041F);
+	}
+	
+	private void executeReads() {
+		if(cycle == 338 || cycle == 340) {
+			nextNTByte();
+		}
+		if(!((cycle > 0 && cycle <= 257) || (cycle >= 321 && cycle <= 336))) {
+			return;
+		}
+		final int cycleTemp = (cycle - 1) % 8;
+		switch(cycleTemp) {
+		case 1:
+			ntLatch = nextNTByte();
+			break;
+		case 3:
+			nextAttrByte();
+			break;
+		case 5:
+			tileLowLatch = nextTileLowByte();
+			break;
+		case 7:
+			tileHighLatch = nextTileHighByte();
+			shiftInNextTiles();
+			if(cycle != 256) {
+				coarseX();
+			} else {
+				yIncrement();
+			}
+			break;
+		}
+		if(cycle == 257) {
+			equalizeTAndVHoriz();
+		}
+	}
+	
+	private int nextNTByte() {
+		return manager.read(0x2000 | (v & 0xFFF));
+	}
+	
+	private void nextAttrByte() {
+		int attr = manager.read(0x23C0 | (v & 0x0C00) | ((v >> 4 & 0x38) | ((v >> 2) & 0x07)));
+		final int tileX = v & 0x1f;
+		final int tileY = v & 0x3e0 >> 5;
+		if (((tileY & (0b10)) != 0)) {
+            if (((tileX & (0b10)) != 0)) {
+                attr = (attr >> 6) & 3;
+            } else {
+                attr = (attr >> 4) & 3;
+            }
+        } else {
+            if (((tileX & (0b10)) != 0)) {
+                attr = (attr >> 2) & 3;
+            } else {
+                attr = attr & 3;
+            }
+        }
+		attrLatchOne = attr & 1;
+		attrLatchTwo = attr >> 1 & 1;
+	}
+	
+	private int nextTileLowByte() {
+		return manager.read(this.bgPatternTable + (ntLatch * 16) + (v >> 12 & 7));
+	}
+	
+	private int nextTileHighByte() {
+		return manager.read(this.bgPatternTable + (ntLatch * 16) + 8 + (v >> 12 & 7));
+	}
+	
+	private void shiftInNextTiles() {
+		bgShiftOne &= ~0xFF;
+		bgShiftTwo &= ~0xFF;
+		bgShiftOne |= tileLowLatch & 0xFF;
+		bgShiftTwo |= tileHighLatch & 0xFF;
+	}
+	
+	private void renderPixel() {
+		final int x = cycle - 1;
+		final int y = scanline;
+		final int offset = y * 256 + x;
+		final int pix1 = bgShiftOne >> 15 & 1;
+		final int pix2 = bgShiftTwo >> 15 & 1;
+		final int bgPix = pix1 | pix2 << 1;
+		final int attr = (attrShiftOne >> 7 & 1) | (attrShiftTwo >> 7 & 1) << 1;
+		final int pix = attr << 1 | bgPix;
+		bitmap[offset] = manager.read(0x3F00 + bgPix);
+		shift();
+	}
+	
+	private void shift() {
+		bgShiftOne <<= 1;
+		bgShiftTwo <<= 1;
+		attrShiftOne <<= 1;
+		attrShiftTwo <<= 1;
+		attrShiftOne |= attrLatchOne & 1;
+		attrShiftTwo |= attrLatchTwo & 1;
+	}
+	
 	public void updatePPUStatus(boolean status, int flag) {
 		if(status) {
 			ppuStatus |= 1 << flag;
 		} else {
 			ppuStatus &= ~(1 << flag);
 		}
+	}
+	
+	private void checkForNMI() {
+		if(this.NMIOn && (ppuStatus >> V_BLANK & 1) == 1) {
+			emulator.setNMI(true);
+		} else {
+			emulator.resetNMI();
+		}
+	}
+	
+	private void checkForFrameEnd() {
+		if (cycle == 340) {
+			cycle = 0;
+            scanline = (scanline + 1) % scanlinesPerFrame;
+            if (scanline == 0) {
+                ++frameCount;
+                mainFrame.renderFrame(bitmap);
+            }
+        }
 	}
 	
 	public int getT() {
@@ -282,5 +446,14 @@ public class PPU {
 	
 	public PPUMemoryManager getManager() {
 		return manager;
+	}
+	
+	public void setMainFrame(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+
+	public void setMirroring(boolean horiz, boolean vert) {
+		// TODO Auto-generated method stub
+		
 	}
 }
