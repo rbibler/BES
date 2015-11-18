@@ -17,6 +17,7 @@ public class MemoryView extends JFrame {
 	private static final long serialVersionUID = -7941655020467385772L;
 	HexTableController cpuController;
 	HexTableController ppuController;
+	CPU6502 cpu;
 	JTabbedPane pane;
 	
 	public MemoryView(int size) {
@@ -30,6 +31,16 @@ public class MemoryView extends JFrame {
 	
 	private void initializeView() {
 		pane = new JTabbedPane();
+	}
+	
+	public void setCPU(CPU6502 cpu) {
+		this.cpu = cpu;
+		if(cpuController != null) {
+			cpuController.registerObserver(cpu.getMem());
+		}
+		if(ppuController != null) {
+			ppuController.registerObserver(cpu.getPPU().getManager());
+		}
 	}
 	
 	private void initializeTables(int size) {

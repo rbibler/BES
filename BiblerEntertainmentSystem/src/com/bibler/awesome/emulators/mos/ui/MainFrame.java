@@ -146,6 +146,9 @@ public class MainFrame extends JFrame implements Observer {
 		nesPanel.requestFocus();
 		ptFrame.setPPU(cpu.getPPU());
 		ntFrame.setPPU(cpu.getPPU());
+		if(this.memFrame != null) {
+			memFrame.setCPU(cpu);
+		}
 	}
 	
 	private void updateDisassemblyPanel(CPU6502 cpu) {

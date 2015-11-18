@@ -102,7 +102,7 @@ public class HexTableModel extends AbstractTableModel {
     { return true; }
 
 	public void setByte(byte b, int currentAddress) {
-		data[currentAddress & 0xFF] = b & 0xFF;
+		data[currentAddress] = b & 0xFF;
 		fireTableDataChanged();
 	}
 

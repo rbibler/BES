@@ -3,7 +3,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Observer;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
@@ -23,6 +26,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import com.bibler.awesome.emulators.mos.controllers.HexTableController;
+import com.bibler.awesome.emulators.mos.interfaces.Notifiable;
 import com.bibler.awesome.utils.ByteUtils;
 
 public class HexTable extends JTable {
@@ -38,11 +43,16 @@ public class HexTable extends JTable {
 	final static int HIGHLIGHT_SELECTED_ONLY = 0x04;
 	private int highlightMode = HIGHLIGHT_UP_TO;
 	private InfoPanel infoPanel;
+	private HexTableController controller;
 	
 	public HexTable(int size) {
 		model = new HexTableModel(size);
 		this.setModel(model);
 		initialize();
+	}
+	
+	public void setController(HexTableController controller) {
+		this.controller = controller;
 	}
 	
 	public void setInfoPanel(InfoPanel infoPanel) {
@@ -105,6 +115,7 @@ public class HexTable extends JTable {
 	
 	private void updateCurrentValue(byte b) {
 		model.setByte(b, currentAddress);
+		controller.notifyObserversOnCellDataChange(new Point(currentAddress, b));
 	}
 	
 	public void addByte(byte toAdd) {

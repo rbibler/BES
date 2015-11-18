@@ -1,8 +1,12 @@
 package com.bibler.awesome.emulators.mos.systems;
 
 import java.awt.Point;
+import java.util.Observable;
+import java.util.Observer;
 
-public class PPUMemoryManager {
+import com.bibler.awesome.emulators.mos.controllers.HexTableController;
+
+public class PPUMemoryManager implements Observer {
 	
 	private Memory patternTable0;
 	private Memory patternTable1;
@@ -168,6 +172,15 @@ public class PPUMemoryManager {
 
 	public Point getLastChanged() {
 		return lastChanged;
+	}
+	
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if(arg0 instanceof HexTableController) {
+			final Point p = (Point) arg1;
+			write(p.x, p.y);
+		}
+		
 	}
 	
 }

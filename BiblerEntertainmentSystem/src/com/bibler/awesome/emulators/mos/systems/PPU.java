@@ -175,6 +175,13 @@ public class PPU {
 	}
 	
 	public void step() {
+		
+		if(renderingEnabled() && scanline < 240 && cycle > 0 && cycle < 257) {
+			renderPixel();
+		}
+		if(scanline < 240 && renderingEnabled() && 
+				((cycle > 0 && cycle <= 257) || (cycle >= 321 && cycle <= 336)))
+			shift();
 		if(scanline <= 239 && renderingEnabled()) {
 			executeReads();
 		} else if(scanline == 241) {
@@ -192,9 +199,7 @@ public class PPU {
 				equalizeTAndVVert();
 			}
 		}
-		if(renderingEnabled() && scanline < 240 && cycle > 0 && cycle < 257) {
-			renderPixel();
-		}
+		
 		cycle++;
 		checkForNMI();
 		checkForFrameEnd();
@@ -245,9 +250,8 @@ public class PPU {
 	}
 	
 	private void equalizeTAndVHoriz() {
-		//v &= ~0x41F;
-        //v |= t & 0x41F;
-		v = (v & 0xFBE0) | (t & 0x041F);
+		v &= ~0x41F;
+        v |= t & 0x41F;
 	}
 	
 	private void executeReads() {
@@ -281,31 +285,17 @@ public class PPU {
 		if(cycle == 257) {
 			equalizeTAndVHoriz();
 		}
+		
 	}
 	
 	private int nextNTByte() {
-		return manager.read(0x2000 | (v & 0xFFF));
+		final int address = 0x2000 | (v & 0xFFF);
+		return manager.read(address);
 	}
 	
 	private void nextAttrByte() {
-		int attr = manager.read(0x23C0 | (v & 0x0C00) | ((v >> 4 & 0x38) | ((v >> 2) & 0x07)));
-		final int tileX = v & 0x1f;
-		final int tileY = v & 0x3e0 >> 5;
-		if (((tileY & (0b10)) != 0)) {
-            if (((tileX & (0b10)) != 0)) {
-                attr = (attr >> 6) & 3;
-            } else {
-                attr = (attr >> 4) & 3;
-            }
-        } else {
-            if (((tileX & (0b10)) != 0)) {
-                attr = (attr >> 2) & 3;
-            } else {
-                attr = attr & 3;
-            }
-        }
-		attrLatchOne = attr & 1;
-		attrLatchTwo = attr >> 1 & 1;
+		final int attrAdd = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
+		attrShiftTwo = manager.read(attrAdd);
 	}
 	
 	private int nextTileLowByte() {
@@ -317,10 +307,14 @@ public class PPU {
 	}
 	
 	private void shiftInNextTiles() {
+		if(scanline == 18)
+		System.out.println("SHIFT");
 		bgShiftOne &= ~0xFF;
 		bgShiftTwo &= ~0xFF;
 		bgShiftOne |= tileLowLatch & 0xFF;
 		bgShiftTwo |= tileHighLatch & 0xFF;
+		attrShiftOne = attrLatchOne;
+		attrLatchOne = attrShiftTwo;
 	}
 	
 	private void renderPixel() {
@@ -328,21 +322,26 @@ public class PPU {
 		final int y = scanline;
 		final int offset = y * 256 + x;
 		final int pix1 = bgShiftOne >> 15 & 1;
-		final int pix2 = bgShiftTwo >> 15 & 1;
+		final int pix2 = (bgShiftTwo >> 15 & 1);
 		final int bgPix = pix1 | pix2 << 1;
-		final int attr = (attrShiftOne >> 7 & 1) | (attrShiftTwo >> 7 & 1) << 1;
-		final int pix = attr << 1 | bgPix;
-		bitmap[offset] = manager.read(0x3F00 + bgPix);
-		shift();
+		int ntX = (x % 32 / 16);
+		int ntY = (y % 32 / 16);
+		int attrBitShift = (ntX * 2) + (ntY * 4);
+		int palVal = ((attrShiftOne >> attrBitShift) & 3) << 2;
+		if(scanline == 18)
+			System.out.println("palVal: " + (attrShiftOne >> attrBitShift) + " X: " + x + " Attr: " + Integer.toHexString(attrShiftOne));
+		final int pix = palVal + bgPix;
+		bitmap[offset] = manager.read(0x3F00 | pix);
+		
 	}
 	
 	private void shift() {
 		bgShiftOne <<= 1;
 		bgShiftTwo <<= 1;
-		attrShiftOne <<= 1;
-		attrShiftTwo <<= 1;
-		attrShiftOne |= attrLatchOne & 1;
-		attrShiftTwo |= attrLatchTwo & 1;
+		//attrShiftOne <<= 1;
+		//attrShiftTwo <<= 1;
+		//attrShiftOne |= attrLatchOne & 1;
+		//attrShiftTwo |= attrLatchTwo & 1;
 	}
 	
 	public void updatePPUStatus(boolean status, int flag) {
@@ -351,6 +350,7 @@ public class PPU {
 		} else {
 			ppuStatus &= ~(1 << flag);
 		}
+		
 	}
 	
 	private void checkForNMI() {
