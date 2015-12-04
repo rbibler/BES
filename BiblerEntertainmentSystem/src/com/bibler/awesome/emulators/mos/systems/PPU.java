@@ -35,9 +35,9 @@ public class PPU {
 	private int bgShiftOne;
 	private int bgShiftTwo;
 	private int attrShiftOne;
-	private int attrShiftTwo;
+	private int attrHighLatch;
 	private int ntLatch;
-	private int attrLatchOne;
+	private int attrLowLatch;
 	private int attrLatchTwo;
 	private int tileLowLatch;
 	private int tileHighLatch;
@@ -184,6 +184,9 @@ public class PPU {
 			shift();
 		if(scanline <= 239 && renderingEnabled()) {
 			executeReads();
+			if(scanline == 32 && cycle == 97) {
+				updatePPUStatus(true, SPRITE_0_HIT);
+			}
 		} else if(scanline == 241) {
 			if(cycle == 1) {
 				updatePPUStatus(true, V_BLANK);
@@ -295,7 +298,7 @@ public class PPU {
 	
 	private void nextAttrByte() {
 		final int attrAdd = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
-		attrShiftTwo = manager.read(attrAdd);
+		attrHighLatch = manager.read(attrAdd);
 	}
 	
 	private int nextTileLowByte() {
@@ -307,29 +310,25 @@ public class PPU {
 	}
 	
 	private void shiftInNextTiles() {
-		if(scanline == 18)
-		System.out.println("SHIFT");
 		bgShiftOne &= ~0xFF;
 		bgShiftTwo &= ~0xFF;
 		bgShiftOne |= tileLowLatch & 0xFF;
 		bgShiftTwo |= tileHighLatch & 0xFF;
-		attrShiftOne = attrLatchOne;
-		attrLatchOne = attrShiftTwo;
+		attrShiftOne = attrLowLatch;
+		attrLowLatch = attrHighLatch;
 	}
 	
 	private void renderPixel() {
-		final int x = cycle - 1;
+		final int bgX = cycle - 1;
 		final int y = scanline;
-		final int offset = y * 256 + x;
-		final int pix1 = bgShiftOne >> 15 & 1;
-		final int pix2 = (bgShiftTwo >> 15 & 1);
+		final int offset = y * 256 + bgX;
+		final int pix1 = (bgShiftOne >> -x + 15) & 1;
+		final int pix2 = (bgShiftTwo >> -x + 15) & 1;
 		final int bgPix = pix1 | pix2 << 1;
-		int ntX = (x % 32 / 16);
+		int ntX = ((bgX - x) % 32 / 16);
 		int ntY = (y % 32 / 16);
 		int attrBitShift = (ntX * 2) + (ntY * 4);
 		int palVal = ((attrShiftOne >> attrBitShift) & 3) << 2;
-		if(scanline == 18)
-			System.out.println("palVal: " + (attrShiftOne >> attrBitShift) + " X: " + x + " Attr: " + Integer.toHexString(attrShiftOne));
 		final int pix = palVal + bgPix;
 		bitmap[offset] = manager.read(0x3F00 | pix);
 		
@@ -453,7 +452,9 @@ public class PPU {
 	}
 
 	public void setMirroring(boolean horiz, boolean vert) {
-		// TODO Auto-generated method stub
+		if(manager != null) {
+			manager.setMirroring(horiz, vert);
+		}
 		
 	}
 }

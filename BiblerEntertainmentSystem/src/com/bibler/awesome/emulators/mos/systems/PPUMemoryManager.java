@@ -110,7 +110,30 @@ public class PPUMemoryManager implements Observer {
 			attributeTable3.write(address - 0x2FC0, data);
 		} else if(address >= 0x3F00 && address < 0x3F10) {
 			bgPalette.write(address - 0x3F00, data);
+			if(address == 0x3F00) {
+				bgPalette.write(0, data);
+				bgPalette.write(4, data);
+				bgPalette.write(8, data);
+				bgPalette.write(12, data);
+				spritePalette.write(0, data);
+				spritePalette.write(4, data);
+				spritePalette.write(8, data);
+				spritePalette.write(12, data);
+			}
 		} else if(address >= 0x3F10 && address < 0x3F20) {
+			if(address % 4 == 00) {
+				bgPalette.write(address - 0x3F10, data);
+			}
+			if(address == 0x3F10) {
+				bgPalette.write(0, data);
+				bgPalette.write(4, data);
+				bgPalette.write(8, data);
+				bgPalette.write(12, data);
+				spritePalette.write(0, data);
+				spritePalette.write(4, data);
+				spritePalette.write(8, data);
+				spritePalette.write(12, data);
+			}
 			spritePalette.write(address - 0x3F10, data);
 		} else if(address >= 0x4000) {
 			OAM.write(address - 0x4000, data);
