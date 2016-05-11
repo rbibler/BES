@@ -32,8 +32,10 @@ public class PPU {
 	private int lastWrite;
 	private int ppuStatus;
 	
-	private int bgShiftOne;
-	private int bgShiftTwo;
+	private int bgHighShiftOne;
+	private int bgHighShiftTwo;
+	private int bgLowShiftOne;
+	private int bgLowShiftTwo;
 	private int attrShiftOne;
 	private int attrHighLatch;
 	private int ntLatch;
@@ -302,18 +304,31 @@ public class PPU {
 	}
 	
 	private int nextTileLowByte() {
-		return manager.read(this.bgPatternTable + (ntLatch * 16) + (v >> 12 & 7));
+		int col = ntLatch % 16;
+		int row = ntLatch / 16;
+		int address = row << 11;
+		address |= col << 7;
+		address |= ((v >> 12) & 7);
+		//return manager.read(this.bgPatternTable + (ntLatch * 16) + (v >> 12 & 7));
+		return manager.read(address);
 	}
 	
 	private int nextTileHighByte() {
-		return manager.read(this.bgPatternTable + (ntLatch * 16) + 8 + (v >> 12 & 7));
+		int col = ntLatch % 16;
+		int row = ntLatch / 16;
+		int address = row << 11;
+		address |= col << 7;
+		address |= 1 << 3;
+		address |= ((v >> 12) & 7);
+		return manager.read(address);
+		//return manager.read(this.bgPatternTable + (ntLatch * 16) + 8 + (v >> 12 & 7));
 	}
 	
 	private void shiftInNextTiles() {
-		bgShiftOne &= ~0xFF;
-		bgShiftTwo &= ~0xFF;
-		bgShiftOne |= tileLowLatch & 0xFF;
-		bgShiftTwo |= tileHighLatch & 0xFF;
+		bgHighShiftOne &= ~0xFF;
+		bgHighShiftTwo &= ~0xFF;
+		bgHighShiftOne |= tileLowLatch & 0xFF;
+		bgHighShiftTwo |= tileHighLatch & 0xFF;
 		attrShiftOne = attrLowLatch;
 		attrLowLatch = attrHighLatch;
 	}
@@ -322,8 +337,8 @@ public class PPU {
 		final int bgX = cycle - 1;
 		final int y = scanline;
 		final int offset = y * 256 + bgX;
-		final int pix1 = (bgShiftOne >> -x + 15) & 1;
-		final int pix2 = (bgShiftTwo >> -x + 15) & 1;
+		final int pix1 = (bgLowShiftOne >> -x + 15) & 1;
+		final int pix2 = (bgLowShiftTwo >> -x + 15) & 1;
 		final int bgPix = pix1 | pix2 << 1;
 		int ntX = ((bgX - x) % 32 / 16);
 		int ntY = (y % 32 / 16);
@@ -335,8 +350,15 @@ public class PPU {
 	}
 	
 	private void shift() {
-		bgShiftOne <<= 1;
-		bgShiftTwo <<= 1;
+		
+		bgLowShiftOne <<= 1;
+		bgLowShiftTwo <<= 1;
+		byte b = (byte) ((bgHighShiftOne >> 7) & 1);
+		bgLowShiftOne ^= (-b ^ bgLowShiftOne) & 1;
+		b = (byte) ((bgHighShiftTwo >> 7) & 1);
+		bgLowShiftTwo ^= (-b ^ bgLowShiftTwo) & 1;
+		bgHighShiftOne <<= 1;
+		bgHighShiftTwo <<= 1;
 		//attrShiftOne <<= 1;
 		//attrShiftTwo <<= 1;
 		//attrShiftOne |= attrLatchOne & 1;
